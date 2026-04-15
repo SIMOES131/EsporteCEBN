@@ -7,8 +7,8 @@ let currentModalidadeSelecionada = "";
 
 // Credenciais do professor
 const PROFESSOR_CREDENTIALS = {
-  username: "professor",
-  password: "professor123",
+  username: "cebn2026",
+  password: "cebn2002",
 };
 
 // Lista completa de modalidades disponíveis
@@ -246,11 +246,11 @@ function fazerLogin(e) {
       currentUserType = "professor";
       document.getElementById("loginContainer").style.display = "none";
       document.getElementById("mainContainer").style.display = "flex";
-      document.getElementById("loggedUser").textContent = "Professor";
-      document.getElementById("loggedUserName").textContent = "Professor";
+      document.getElementById("loggedUser").textContent = "cebn2026";
+      document.getElementById("loggedUserName").textContent = "cebn2026";
       inicializarSistema();
     } else {
-      alert("Credenciais inválidas! Professor: professor / professor123");
+      alert("Credenciais inválidas! Senha ou usuário incorretos.");
     }
   } else {
     const aluno = alunos.find((a) => a.cpf === username);
@@ -808,10 +808,10 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
         : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td>${aluno.id}</td><td>${aluno.nome}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${aluno.modalidades.join(", ")}</td><td>${aluno.advertencias}</td><td class="${statusClass}">${statusText}</td><td>${aluno.mediaGeral.toFixed(1)}</td></tr>`;
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td></td><td class="${statusClass}">${statusText}</td></td><td>${aluno.idade}</td></td><td>${aluno.sexo}</td><tr><td>${aluno.turma}</td><td><td>${diasTreinoTexto}</td><td><td>${aluno.modalidades.join(", ")}</td><td><td>${aluno.advertencias}</td></td><td>${aluno.mediaGeral.toFixed(1)}</td></tr>`;
   });
 
-  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
+  tabelaHTML += `</tbody>不错<div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -853,7 +853,7 @@ function gerarPDFPorModalidade() {
             <h1>Centro Educacional de Barra Nova</h1>
             <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
             <table>
-                <thead><tr><th>ID</th><th>Nome</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Status</th><th>Outras Modalidades</th></tr></thead>
+                <thead><tr><th>ID</th><th>Nome</th><th>Status</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Outras Modalidades</th></tr></thead>
                 <tbody>`;
 
   alunosModalidade.forEach((aluno) => {
@@ -863,7 +863,7 @@ function gerarPDFPorModalidade() {
     const statusText = isApto ? "Apto" : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td>${aluno.id}</td><td>${aluno.nome}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td class="${statusClass}">${statusText}</td><td>${outras}</td></tr>`;
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td></tr>`;
   });
 
   tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;
