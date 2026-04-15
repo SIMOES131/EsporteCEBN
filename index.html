@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Centro Educacional de Barra Nova - Gestão Esportiva</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Tela de Login -->
+    <div id="loginContainer" class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <i class="fas fa-school"></i>
+          <h2>Centro Educacional<br />de Barra Nova</h2>
+          <p>Sistema de Gestão Esportiva</p>
+        </div>
+        <form id="loginForm">
+          <div class="input-group-custom">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="username"
+              placeholder="Usuário (CPF ou professor)"
+              required
+              autocomplete="off"
+            />
+          </div>
+          <div class="input-group-custom">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="password"
+              placeholder="Senha (CPF)"
+              required
+            />
+          </div>
+          <div class="login-options">
+            <label class="checkbox-label">
+              <input type="radio" name="userType" value="professor" checked />
+              Professor
+            </label>
+            <label class="checkbox-label">
+              <input type="radio" name="userType" value="aluno" /> Aluno
+            </label>
+          </div>
+          <button type="submit" class="btn-login">
+            Entrar <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+        <div class="login-footer">
+          <small>Aluno: usuário: CPF (somente números) | senha: CPF</small
+          ><br />
+        </div>
+      </div>
+    </div>
+
+    <!-- Sistema Principal - Professor -->
+    <div id="mainContainer" style="display: none">
+      <div class="mobile-header">
+        <button id="menuToggle" class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h3>C.E. Barra Nova</h3>
+        <div class="user-info-header">
+          <i class="fas fa-user-circle"></i>
+          <span id="loggedUserName">Professor</span>
+        </div>
+      </div>
+
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-school"></i>
+          <h3>C.E. Barra Nova</h3>
+          <small>Gestão Esportiva</small>
+        </div>
+        <div class="sidebar-stats">
+          <div class="stat-item">
+            <i class="fas fa-users"></i>
+            <span id="totalAlunos">0</span>
+            <small>Alunos</small>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <span id="totalTurmas">0</span>
+            <small>Turmas</small>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-link active" data-view="dashboard">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="#" class="nav-link" data-view="alunos">
+            <i class="fas fa-users"></i> Alunos
+          </a>
+          <a href="#" class="nav-link" data-view="busca">
+            <i class="fas fa-search"></i> Busca Avançada
+          </a>
+          <a href="#" class="nav-link" data-view="modalidades">
+            <i class="fas fa-medal"></i> Por Modalidade
+          </a>
+        </nav>
+        <button id="logoutBtn" class="btn-logout">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </div>
+
+      <div class="main-content">
+        <div class="top-bar">
+          <h2 id="pageTitle">Dashboard</h2>
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="loggedUser">Professor</span>
+          </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fas fa-venus-mars"></i>
+              <div class="stat-info">
+                <span class="stat-label">Masculino</span>
+                <span class="stat-value" id="statMasculino">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-female"></i>
+              <div class="stat-info">
+                <span class="stat-label">Feminino</span>
+                <span class="stat-value" id="statFeminino">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-calendar-alt"></i>
+              <div class="stat-info">
+                <span class="stat-label">Média Idade</span>
+                <span class="stat-value" id="mediaIdade">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-chart-line"></i>
+              <div class="stat-info">
+                <span class="stat-label">Total Alunos</span>
+                <span class="stat-value" id="totalAlunosDash">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fas fa-sun"></i>
+              <div class="stat-info">
+                <span class="stat-label">Turno Manhã</span>
+                <span class="stat-value" id="turnoManha">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-moon"></i>
+              <div class="stat-info">
+                <span class="stat-label">Turno Tarde</span>
+                <span class="stat-value" id="turnoTarde">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-check-circle" style="color: #27ae60"></i>
+              <div class="stat-info">
+                <span class="stat-label">Aptos a Treinar</span>
+                <span class="stat-value" id="aptosTreinar">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-ban" style="color: #e74c3c"></i>
+              <div class="stat-info">
+                <span class="stat-label">Suspensos</span>
+                <span class="stat-value" id="suspensos">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alunos View -->
+        <div id="alunosView" class="view">
+          <div class="filtros-panel">
+            <h3><i class="fas fa-search"></i> Buscar Alunos</h3>
+            <div class="filtros-grid">
+              <div class="filtro-group">
+                <label><i class="fas fa-user"></i> Nome do Aluno</label>
+                <input
+                  type="text"
+                  id="searchNome"
+                  placeholder="Digite o nome do aluno..."
+                  class="form-control"
+                />
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-calendar-alt"></i> Idade</label>
+                <div style="display: flex; gap: 5px">
+                  <input
+                    type="number"
+                    id="filtroIdadeMin"
+                    placeholder="Idade mín."
+                    min="0"
+                    class="form-control"
+                  />
+                  <input
+                    type="number"
+                    id="filtroIdadeMax"
+                    placeholder="Idade máx."
+                    min="0"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="filtro-group">
+                <label
+                  ><i class="fas fa-calendar-week"></i> Dia da Semana</label
+                >
+                <select id="filtroDia">
+                  <option value="">Todos</option>
+                  <option value="Segunda">Segunda-feira</option>
+                  <option value="Terça">Terça-feira</option>
+                  <option value="Quarta">Quarta-feira</option>
+                  <option value="Quinta">Quinta-feira</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-clock"></i> Horário</label>
+                <select id="filtroHorario">
+                  <option value="">Todos</option>
+                  <option value="07h15-08h15">07h15 - 08h15</option>
+                  <option value="08h15-09h15">08h15 - 09h15</option>
+                  <option value="09h15-10h15">09h15 - 10h15</option>
+                  <option value="10h15-11h15">10h15 - 11h15</option>
+                  <option value="13h15-14h15">13h15 - 14h15</option>
+                  <option value="14h15-15h15">14h15 - 15h15</option>
+                  <option value="15h15-16h15">15h15 - 16h15</option>
+                  <option value="16h15-17h15">16h15 - 17h15</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-chalkboard"></i> Turma</label>
+                <select id="filtroTurma">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-medal"></i> Modalidade</label>
+                <select id="filtroModalidade">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-venus-mars"></i> Sexo</label>
+                <select id="filtroSexo">
+                  <option value="">Todos</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-check-circle"></i> Status</label>
+                <select id="filtroStatus">
+                  <option value="">Todos</option>
+                  <option value="apto">✅ Apto</option>
+                  <option value="suspenso">❌ Suspenso</option>
+                </select>
+              </div>
+            </div>
+            <div class="filtros-actions">
+              <button id="aplicarFiltrosBtn" class="btn-primary">
+                <i class="fas fa-search"></i> Buscar
+              </button>
+              <button id="limparFiltrosBtn" class="btn-secondary">
+                <i class="fas fa-eraser"></i> Limpar
+              </button>
+              <button id="gerarPDFBtn" class="btn-pdf">
+                <i class="fas fa-file-pdf"></i> Gerar PDF
+              </button>
+            </div>
+          </div>
+          <div id="alunosList" class="alunos-grid"></div>
+        </div>
+
+        <!-- Busca Avançada View -->
+        <div id="buscaView" class="view">
+          <div class="filtros-panel">
+            <h3><i class="fas fa-sliders-h"></i> Filtros Avançados</h3>
+            <div class="filtros-grid">
+              <div class="filtro-group">
+                <label><i class="fas fa-user"></i> Nome do Aluno</label>
+                <input
+                  type="text"
+                  id="buscaNome"
+                  placeholder="Digite o nome do aluno..."
+                  class="form-control"
+                />
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-calendar-alt"></i> Idade</label>
+                <div style="display: flex; gap: 5px">
+                  <input
+                    type="number"
+                    id="buscaIdadeMin"
+                    placeholder="Idade mín."
+                    min="0"
+                    class="form-control"
+                  />
+                  <input
+                    type="number"
+                    id="buscaIdadeMax"
+                    placeholder="Idade máx."
+                    min="0"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="filtro-group">
+                <label
+                  ><i class="fas fa-calendar-week"></i> Dia da Semana</label
+                >
+                <select id="buscaDia">
+                  <option value="">Todos</option>
+                  <option value="Segunda">Segunda-feira</option>
+                  <option value="Terça">Terça-feira</option>
+                  <option value="Quarta">Quarta-feira</option>
+                  <option value="Quinta">Quinta-feira</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-clock"></i> Horário</label>
+                <select id="buscaHorario">
+                  <option value="">Todos</option>
+                  <option value="07h15-08h15">07h15 - 08h15</option>
+                  <option value="08h15-09h15">08h15 - 09h15</option>
+                  <option value="09h15-10h15">09h15 - 10h15</option>
+                  <option value="10h15-11h15">10h15 - 11h15</option>
+                  <option value="13h15-14h15">13h15 - 14h15</option>
+                  <option value="14h15-15h15">14h15 - 15h15</option>
+                  <option value="15h15-16h15">15h15 - 16h15</option>
+                  <option value="16h15-17h15">16h15 - 17h15</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-chalkboard"></i> Turma</label>
+                <select id="buscaTurma">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-medal"></i> Modalidade</label>
+                <select id="buscaModalidade">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-venus-mars"></i> Sexo</label>
+                <select id="buscaSexo">
+                  <option value="">Todos</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-check-circle"></i> Status</label>
+                <select id="buscaStatus">
+                  <option value="">Todos</option>
+                  <option value="apto">✅ Apto</option>
+                  <option value="suspenso">❌ Suspenso</option>
+                </select>
+              </div>
+              <div class="filtro-group">
+                <label
+                  ><i class="fas fa-exclamation-triangle"></i>
+                  Advertências</label
+                >
+                <input
+                  type="number"
+                  id="buscaAdvertencias"
+                  placeholder="Máx. advertências"
+                  min="0"
+                  class="form-control"
+                />
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-ban"></i> Suspensões</label>
+                <input
+                  type="number"
+                  id="buscaSuspensoes"
+                  placeholder="Máx. suspensões"
+                  min="0"
+                  class="form-control"
+                />
+              </div>
+              <div class="filtro-group">
+                <label><i class="fas fa-star"></i> Média Geral</label>
+                <div style="display: flex; gap: 5px">
+                  <input
+                    type="number"
+                    id="buscaMediaMin"
+                    placeholder="Média mín."
+                    step="0.1"
+                    class="form-control"
+                  />
+                  <input
+                    type="number"
+                    id="buscaMediaMax"
+                    placeholder="Média máx."
+                    step="0.1"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="filtros-actions">
+              <button id="buscaAvancadaBtn" class="btn-primary">
+                <i class="fas fa-search"></i> Buscar
+              </button>
+              <button id="limparBuscaBtn" class="btn-secondary">
+                <i class="fas fa-eraser"></i> Limpar
+              </button>
+            </div>
+          </div>
+          <div id="buscaResultados" class="alunos-grid"></div>
+        </div>
+
+        <!-- Modalidades View -->
+        <div id="modalidadesView" class="view">
+          <div class="modalidades-buttons" id="modalidadesButtons"></div>
+          <div class="filtros-actions" style="margin-bottom: 20px">
+            <button id="gerarPDFModalidadeBtn" class="btn-pdf">
+              <i class="fas fa-file-pdf"></i> Gerar PDF desta Modalidade
+            </button>
+          </div>
+          <div id="modalidadeResultados" class="alunos-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela do Aluno -->
+    <div id="alunoContainer" style="display: none">
+      <div class="aluno-dashboard">
+        <div class="aluno-header">
+          <i class="fas fa-school"></i>
+          <h2>Centro Educacional de Barra Nova</h2>
+          <p>Portal do Aluno</p>
+        </div>
+        <div id="alunoInfo" class="aluno-info-container"></div>
+        <button
+          id="alunoLogoutBtn"
+          class="btn-logout"
+          style="margin: 20px auto; display: block; width: 200px"
+        >
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Card Aluno (somente visualização - sem edição) -->
+    <div id="cardModal" class="modal">
+      <div class="modal-content card-modal">
+        <div class="modal-header">
+          <h3>Card do Aluno</h3>
+          <span class="close-card">&times;</span>
+        </div>
+        <div id="cardContent"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="alunosData.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
