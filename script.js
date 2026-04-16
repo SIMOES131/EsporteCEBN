@@ -13,12 +13,73 @@ const PROFESSOR_CREDENTIALS = {
 
 // Lista completa de modalidades disponíveis
 const MODALIDADES = [
+  // Esportes individuais
   "xadrez",
   "dominó em dupla",
-  "futsal",
-  "handebol",
-  "vôlei",
-  "baleado",
+  "baleado misto",
+
+  // Futsal por categoria
+  "futsal sub-11 masc",
+  "futsal sub-11 fem",
+  "futsal sub-13 masc",
+  "futsal sub-13 fem",
+  "futsal sub-15 masc",
+  "futsal sub-15 fem",
+  "futsal sub-17 masc",
+  "futsal sub-17 fem",
+  "futsal aberto masc",
+  "futsal aberto fem",
+
+  // Handebol por categoria
+  "handebol sub-11 masc",
+  "handebol sub-11 fem",
+  "handebol sub-13 masc",
+  "handebol sub-13 fem",
+  "handebol sub-15 masc",
+  "handebol sub-15 fem",
+  "handebol sub-17 masc",
+  "handebol sub-17 fem",
+  "handebol aberto masc",
+  "handebol aberto fem",
+
+  // Vôlei por categoria (incluindo misto)
+  "vôlei sub-11 masc",
+  "vôlei sub-11 fem",
+  "vôlei sub-13 masc",
+  "vôlei sub-13 fem",
+  "vôlei sub-15 masc",
+  "vôlei sub-15 fem",
+  "vôlei sub-17 masc",
+  "vôlei sub-17 fem",
+  "vôlei aberto masc",
+  "vôlei aberto fem",
+  "vôlei misto",
+
+  // Basquete por categoria
+  "basquete sub-11 masc",
+  "basquete sub-11 fem",
+  "basquete sub-13 masc",
+  "basquete sub-13 fem",
+  "basquete sub-15 masc",
+  "basquete sub-15 fem",
+  "basquete sub-17 masc",
+  "basquete sub-17 fem",
+  "basquete aberto masc",
+  "basquete aberto fem",
+
+  // Baleado por categoria
+  "baleado sub-11 masc",
+  "baleado sub-11 fem",
+  "baleado sub-13 masc",
+  "baleado sub-13 fem",
+  "baleado sub-15 masc",
+  "baleado sub-15 fem",
+  "baleado sub-17 masc",
+  "baleado sub-17 fem",
+  "baleado aberto masc",
+  "baleado aberto fem",
+
+  // Atletismo por categoria (sem aberto)
   "atletismo sub-11 masc",
   "atletismo sub-11 fem",
   "atletismo sub-13 masc",
@@ -27,9 +88,6 @@ const MODALIDADES = [
   "atletismo sub-15 fem",
   "atletismo sub-17 masc",
   "atletismo sub-17 fem",
-  "atletismo aberto masc",
-  "atletismo aberto fem",
-  "baleado misto",
 ];
 
 // Inicialização do sistema
@@ -808,10 +866,10 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
         : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td></td><td class="${statusClass}">${statusText}</td></td><td>${aluno.idade}</td></td><td>${aluno.sexo}</td><tr><td>${aluno.turma}</td><td><td>${diasTreinoTexto}</td><td><td>${aluno.modalidades.join(", ")}</td><td><td>${aluno.advertencias}</td></td><td>${aluno.mediaGeral.toFixed(1)}</td></tr>`;
+    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.modalidades.join(", ")}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.advertencias}</td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.mediaGeral.toFixed(1)}</td></tr>`;
   });
 
-  tabelaHTML += `</tbody>不错<div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
+  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -863,7 +921,7 @@ function gerarPDFPorModalidade() {
     const statusText = isApto ? "Apto" : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td></tr>`;
+    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${outras}</td></tr>`;
   });
 
   tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;

@@ -627,7 +627,7 @@ const ALUNOS_CADASTRADOS = [
       { dia: "Segunda", horario: "07h15-08h15" },
       { dia: "Quarta", horario: "07h15-08h15" },
     ],
-    modalidades: ["futsal"],
+    modalidades: ["futsal aberto fem"],
     advertencias: 0,
     suspensoes: 0,
     diasSuspensao: 0,
