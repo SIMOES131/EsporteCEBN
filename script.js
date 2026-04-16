@@ -271,12 +271,73 @@ function preencherModalidades() {
     }
   });
 
+  // Organizar modalidades por categoria
+  const categorias = {
+    individual: ["xadrez", "dominó em dupla", "baleado misto"],
+    futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
+    handebol: MODALIDADES.filter((m) => m.startsWith("handebol")),
+    volei: MODALIDADES.filter((m) => m.startsWith("vôlei")),
+    basquete: MODALIDADES.filter((m) => m.startsWith("basquete")),
+    baleado: MODALIDADES.filter(
+      (m) => m.startsWith("baleado") && !m.includes("misto"),
+    ),
+    atletismo: MODALIDADES.filter((m) => m.startsWith("atletismo")),
+  };
+
   const container = document.getElementById("modalidadesButtons");
   if (container) {
-    container.innerHTML = MODALIDADES.map(
-      (m) =>
-        `<button class="btn-modalidade" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`,
-    ).join("");
+    container.innerHTML = `
+      <div class="modalidades-container">
+        <div class="modalidades-categoria categoria-individual">
+          <h4><i class="fas fa-chess"></i> Esportes Individuais / Misto</h4>
+          <div class="modalidades-buttons">
+            ${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-futsal">
+          <h4><i class="fas fa-futbol"></i> Futsal</h4>
+          <div class="modalidades-buttons">
+            ${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-handebol">
+          <h4><i class="fas fa-hand-peace"></i> Handebol</h4>
+          <div class="modalidades-buttons">
+            ${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-volei">
+          <h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4>
+          <div class="modalidades-buttons">
+            ${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-basquete">
+          <h4><i class="fas fa-basketball-ball"></i> Basquete</h4>
+          <div class="modalidades-buttons">
+            ${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-baleado">
+          <h4><i class="fas fa-crosshairs"></i> Baleado</h4>
+          <div class="modalidades-buttons">
+            ${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+        
+        <div class="modalidades-categoria categoria-atletismo">
+          <h4><i class="fas fa-running"></i> Atletismo</h4>
+          <div class="modalidades-buttons">
+            ${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}
+          </div>
+        </div>
+      </div>
+    `;
 
     document.querySelectorAll(".btn-modalidade").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -286,7 +347,6 @@ function preencherModalidades() {
     });
   }
 }
-
 function fazerLogin(e) {
   e.preventDefault();
   const username = document.getElementById("username").value;

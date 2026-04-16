@@ -505,6 +505,113 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Modalidades View - Organização por Categorias */
+.modalidades-container {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.modalidades-categoria {
+  margin-bottom: 30px;
+}
+
+.modalidades-categoria h4 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid;
+  display: inline-block;
+}
+
+/* Cores por categoria */
+.categoria-individual h4 {
+  border-bottom-color: #9b59b6;
+}
+.categoria-futsal h4 {
+  border-bottom-color: #e74c3c;
+}
+.categoria-handebol h4 {
+  border-bottom-color: #3498db;
+}
+.categoria-volei h4 {
+  border-bottom-color: #2ecc71;
+}
+.categoria-basquete h4 {
+  border-bottom-color: #f39c12;
+}
+.categoria-baleado h4 {
+  border-bottom-color: #1abc9c;
+}
+.categoria-atletismo h4 {
+  border-bottom-color: #e67e22;
+}
+
+.modalidades-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Estilos dos botões por categoria */
+.btn-modalidade {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.btn-modalidade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Cores por esporte */
+.btn-modalidade-individual {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+.btn-modalidade-futsal {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+.btn-modalidade-handebol {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+.btn-modalidade-volei {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+.btn-modalidade-basquete {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+.btn-modalidade-baleado {
+  background: linear-gradient(135deg, #1abc9c, #16a085);
+}
+.btn-modalidade-atletismo {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+/* Botões compactos para telas menores */
+@media (max-width: 768px) {
+  .btn-modalidade {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .modalidades-categoria h4 {
+    font-size: 16px;
+  }
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Modal */
 .modal {
   display: none;
@@ -595,6 +702,95 @@ body {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* Logo Styles */
+.logo-container {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.school-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-logo-container {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.sidebar-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-logo-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.aluno-logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.aluno-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+}
+
+/* Responsividade para logos */
+@media (max-width: 768px) {
+  .school-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .sidebar-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .topbar-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .aluno-logo {
+    width: 60px;
+    height: 60px;
+  }
+}
 .status-apto {
   background: #27ae60;
   color: white;
@@ -611,32 +807,6 @@ body {
   border-radius: 10px;
   text-align: center;
   font-weight: bold;
-}
-
-.modalidades-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: white;
-  border-radius: 15px;
-}
-
-.btn-modalidade {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: bold;
-  font-size: 13px;
-}
-
-.btn-modalidade:hover {
-  transform: translateY(-2px);
 }
 
 .no-results {
@@ -715,12 +885,12 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .modalidades-buttons {
-    gap: 8px;
+  .modalidades-categoria h4 {
+    font-size: 16px;
   }
 
   .btn-modalidade {
-    padding: 8px 12px;
+    padding: 6px 12px;
     font-size: 11px;
   }
 }
