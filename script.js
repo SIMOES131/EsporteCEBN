@@ -13,9 +13,11 @@ const PROFESSOR_CREDENTIALS = {
 
 // Lista completa de modalidades disponíveis
 const MODALIDADES = [
+  // Esportes individuais
   "xadrez",
-  "dominó em dupla",
-  "baleado misto",
+  "dominó",
+
+  // Futsal por categoria
   "futsal sub-11 masc",
   "futsal sub-11 fem",
   "futsal sub-13 masc",
@@ -26,6 +28,8 @@ const MODALIDADES = [
   "futsal sub-17 fem",
   "futsal aberto masc",
   "futsal aberto fem",
+
+  // Handebol por categoria
   "handebol sub-11 masc",
   "handebol sub-11 fem",
   "handebol sub-13 masc",
@@ -36,6 +40,8 @@ const MODALIDADES = [
   "handebol sub-17 fem",
   "handebol aberto masc",
   "handebol aberto fem",
+
+  // Vôlei por categoria (incluindo misto)
   "vôlei sub-11 masc",
   "vôlei sub-11 fem",
   "vôlei sub-13 masc",
@@ -47,6 +53,8 @@ const MODALIDADES = [
   "vôlei aberto masc",
   "vôlei aberto fem",
   "vôlei misto",
+
+  // Basquete por categoria
   "basquete sub-11 masc",
   "basquete sub-11 fem",
   "basquete sub-13 masc",
@@ -57,6 +65,8 @@ const MODALIDADES = [
   "basquete sub-17 fem",
   "basquete aberto masc",
   "basquete aberto fem",
+
+  // Baleado por categoria (incluindo misto)
   "baleado sub-11 masc",
   "baleado sub-11 fem",
   "baleado sub-13 masc",
@@ -67,6 +77,9 @@ const MODALIDADES = [
   "baleado sub-17 fem",
   "baleado aberto masc",
   "baleado aberto fem",
+  "baleado misto",
+
+  // Atletismo por categoria (sem aberto)
   "atletismo sub-11 masc",
   "atletismo sub-11 fem",
   "atletismo sub-13 masc",
@@ -407,14 +420,12 @@ function preencherModalidades() {
   });
 
   const categorias = {
-    individual: ["xadrez", "dominó em dupla", "baleado misto"],
+    individual: ["xadrez", "dominó"],
     futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
     handebol: MODALIDADES.filter((m) => m.startsWith("handebol")),
     volei: MODALIDADES.filter((m) => m.startsWith("vôlei")),
     basquete: MODALIDADES.filter((m) => m.startsWith("basquete")),
-    baleado: MODALIDADES.filter(
-      (m) => m.startsWith("baleado") && !m.includes("misto"),
-    ),
+    baleado: MODALIDADES.filter((m) => m.startsWith("baleado")),
     atletismo: MODALIDADES.filter((m) => m.startsWith("atletismo")),
   };
 
@@ -423,7 +434,7 @@ function preencherModalidades() {
     container.innerHTML = `
       <div class="modalidades-container">
         <div class="modalidades-categoria categoria-individual">
-          <h4><i class="fas fa-chess"></i> Esportes Individuais / Misto</h4>
+          <h4><i class="fas fa-chess"></i> Esportes Individuais</h4>
           <div class="modalidades-buttons">
             ${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}
           </div>
