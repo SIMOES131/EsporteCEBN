@@ -13,12 +13,9 @@ const PROFESSOR_CREDENTIALS = {
 
 // Lista completa de modalidades disponíveis
 const MODALIDADES = [
-  // Esportes individuais
   "xadrez",
   "dominó em dupla",
   "baleado misto",
-
-  // Futsal por categoria
   "futsal sub-11 masc",
   "futsal sub-11 fem",
   "futsal sub-13 masc",
@@ -29,8 +26,6 @@ const MODALIDADES = [
   "futsal sub-17 fem",
   "futsal aberto masc",
   "futsal aberto fem",
-
-  // Handebol por categoria
   "handebol sub-11 masc",
   "handebol sub-11 fem",
   "handebol sub-13 masc",
@@ -41,8 +36,6 @@ const MODALIDADES = [
   "handebol sub-17 fem",
   "handebol aberto masc",
   "handebol aberto fem",
-
-  // Vôlei por categoria (incluindo misto)
   "vôlei sub-11 masc",
   "vôlei sub-11 fem",
   "vôlei sub-13 masc",
@@ -54,8 +47,6 @@ const MODALIDADES = [
   "vôlei aberto masc",
   "vôlei aberto fem",
   "vôlei misto",
-
-  // Basquete por categoria
   "basquete sub-11 masc",
   "basquete sub-11 fem",
   "basquete sub-13 masc",
@@ -66,8 +57,6 @@ const MODALIDADES = [
   "basquete sub-17 fem",
   "basquete aberto masc",
   "basquete aberto fem",
-
-  // Baleado por categoria
   "baleado sub-11 masc",
   "baleado sub-11 fem",
   "baleado sub-13 masc",
@@ -78,8 +67,6 @@ const MODALIDADES = [
   "baleado sub-17 fem",
   "baleado aberto masc",
   "baleado aberto fem",
-
-  // Atletismo por categoria (sem aberto)
   "atletismo sub-11 masc",
   "atletismo sub-11 fem",
   "atletismo sub-13 masc",
@@ -90,11 +77,84 @@ const MODALIDADES = [
   "atletismo sub-17 fem",
 ];
 
+// Função para calcular a data de fim da suspensão (último dia suspenso)
+function calcularDataFimSuspensao(dataInicio, dias) {
+  if (!dataInicio || dias <= 0) return null;
+  const [ano, mes, dia] = dataInicio.split("-").map(Number);
+  const data = new Date(ano, mes - 1, dia);
+  data.setDate(data.getDate() + dias - 1); // Subtrai 1 porque o dia inicial conta
+  const anoFim = data.getFullYear();
+  const mesFim = String(data.getMonth() + 1).padStart(2, "0");
+  const diaFim = String(data.getDate()).padStart(2, "0");
+  return `${anoFim}-${mesFim}-${diaFim}`;
+}
+
+// Função para calcular a data de retorno (dia seguinte ao fim da suspensão)
+function calcularDataRetorno(dataInicio, dias) {
+  if (!dataInicio || dias <= 0) return null;
+  const [ano, mes, dia] = dataInicio.split("-").map(Number);
+  const data = new Date(ano, mes - 1, dia);
+  data.setDate(data.getDate() + dias);
+  const anoRetorno = data.getFullYear();
+  const mesRetorno = String(data.getMonth() + 1).padStart(2, "0");
+  const diaRetorno = String(data.getDate()).padStart(2, "0");
+  return `${anoRetorno}-${mesRetorno}-${diaRetorno}`;
+}
+
+// Função para formatar data para exibição
+function formatarDataParaExibicao(dataString) {
+  if (!dataString) return "";
+  const [ano, mes, dia] = dataString.split("-").map(Number);
+  return `${dia.toString().padStart(2, "0")}/${mes.toString().padStart(2, "0")}/${ano}`;
+}
+
+// Função para formatar o período de suspensão
+function formatarPeriodoSuspensao(dataInicio, dias) {
+  if (!dataInicio || dias <= 0) return "";
+  const inicioFormatado = formatarDataParaExibicao(dataInicio);
+  const dataFim = calcularDataFimSuspensao(dataInicio, dias);
+  const fimFormatado = formatarDataParaExibicao(dataFim);
+  return `${dias} dias (${inicioFormatado} até ${fimFormatado})`;
+}
+
+// Função para verificar e reativar alunos automaticamente
+function verificarReativacaoAutomatica() {
+  const hoje = new Date();
+  const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+  let alteracoes = false;
+
+  alunos.forEach((aluno) => {
+    if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
+      const dataFim = calcularDataFimSuspensao(
+        aluno.dataInicioSuspensao,
+        aluno.diasSuspensao,
+      );
+      if (hojeStr > dataFim) {
+        aluno.status = "apto";
+        aluno.suspensoes = 0;
+        aluno.diasSuspensao = 0;
+        aluno.dataInicioSuspensao = null;
+        alteracoes = true;
+        console.log(
+          `Aluno ${aluno.nome} foi reativado automaticamente em ${formatarDataParaExibicao(hojeStr)}`,
+        );
+      }
+    }
+  });
+
+  if (alteracoes) {
+    atualizarDashboard();
+    renderizarAlunos(alunosFiltrados.length > 0 ? alunosFiltrados : alunos);
+    atualizarEstatisticasSidebar();
+  }
+}
+
 // Inicialização do sistema
 document.addEventListener("DOMContentLoaded", () => {
   carregarAlunosDoArquivo();
   inicializarEventos();
   preencherModalidades();
+  setInterval(verificarReativacaoAutomatica, 60000);
 });
 
 function carregarAlunosDoArquivo() {
@@ -105,12 +165,33 @@ function carregarAlunosDoArquivo() {
         aluno.status = aluno.suspensoes > 0 ? "suspenso" : "apto";
       }
       if (aluno.diasSuspensao === undefined) aluno.diasSuspensao = 0;
+      if (aluno.dataInicioSuspensao === undefined)
+        aluno.dataInicioSuspensao = null;
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
         aluno.diaTreino = aluno.diasTreino[0].dia;
         aluno.horario = aluno.diasTreino[0].horario;
       } else {
         if (!aluno.diaTreino) aluno.diaTreino = "Segunda";
         if (!aluno.horario) aluno.horario = "07h15-08h15";
+      }
+
+      if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
+        const hoje = new Date();
+        const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+        const dataFim = calcularDataFimSuspensao(
+          aluno.dataInicioSuspensao,
+          aluno.diasSuspensao,
+        );
+        if (hojeStr > dataFim) {
+          aluno.status = "apto";
+          aluno.suspensoes = 0;
+          aluno.diasSuspensao = 0;
+          aluno.dataInicioSuspensao = null;
+        } else {
+          aluno.status = "suspenso";
+        }
+      } else {
+        aluno.status = "apto";
       }
     });
     console.log("Alunos carregados:", alunos.length);
@@ -164,7 +245,6 @@ function inicializarEventos() {
     .getElementById("limparBuscaBtn")
     ?.addEventListener("click", limparBusca);
 
-  // Filtros em tempo real
   document
     .getElementById("searchNome")
     ?.addEventListener("input", () => aplicarFiltros());
@@ -271,7 +351,6 @@ function preencherModalidades() {
     }
   });
 
-  // Organizar modalidades por categoria
   const categorias = {
     individual: ["xadrez", "dominó em dupla", "baleado misto"],
     futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
@@ -294,42 +373,36 @@ function preencherModalidades() {
             ${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-futsal">
           <h4><i class="fas fa-futbol"></i> Futsal</h4>
           <div class="modalidades-buttons">
             ${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-handebol">
           <h4><i class="fas fa-hand-peace"></i> Handebol</h4>
           <div class="modalidades-buttons">
             ${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-volei">
           <h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4>
           <div class="modalidades-buttons">
             ${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-basquete">
           <h4><i class="fas fa-basketball-ball"></i> Basquete</h4>
           <div class="modalidades-buttons">
             ${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-baleado">
           <h4><i class="fas fa-crosshairs"></i> Baleado</h4>
           <div class="modalidades-buttons">
             ${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
-        
         <div class="modalidades-categoria categoria-atletismo">
           <h4><i class="fas fa-running"></i> Atletismo</h4>
           <div class="modalidades-buttons">
@@ -347,6 +420,7 @@ function preencherModalidades() {
     });
   }
 }
+
 function fazerLogin(e) {
   e.preventDefault();
   const username = document.getElementById("username").value;
@@ -407,45 +481,56 @@ function exibirPainelAluno(aluno) {
   const isApto = aluno.status === "apto";
   const statusClass = isApto ? "status-apto" : "status-suspenso";
   const statusIcon = isApto ? "✅" : "❌";
+  const periodoSuspensao = !isApto
+    ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
+    : "";
   const statusText = isApto
     ? "APTO PARA TREINAR"
-    : `SUSPENSO - ${aluno.diasSuspensao} dias de suspensão`;
+    : `SUSPENSO - ${periodoSuspensao}`;
   const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
+  const dataRetorno =
+    !isApto && aluno.dataInicioSuspensao
+      ? formatarDataParaExibicao(
+          calcularDataRetorno(aluno.dataInicioSuspensao, aluno.diasSuspensao),
+        )
+      : null;
 
   const container = document.getElementById("alunoInfo");
   container.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-            </div>
-            <h2>${aluno.nome}</h2>
-            <p><i class="fas fa-id-card"></i> CPF: ***.***.***-${aluno.cpf.slice(-4)}</p>
-        </div>
-        <div style="margin-bottom: 20px;">
-            <div class="${statusClass}" style="padding: 15px; border-radius: 10px; text-align: center;">
-                <span style="font-size: 24px;">${statusIcon}</span>
-                <p style="margin-top: 10px; font-weight: bold;">${statusText}</p>
-            </div>
-        </div>
-        <div style="border-top: 1px solid #eee; padding-top: 20px;">
-            <p><strong><i class="fas fa-calendar-alt"></i> Data Nascimento:</strong> ${new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")}</p>
-            <p><strong><i class="fas fa-birthday-cake"></i> Idade:</strong> ${aluno.idade} anos</p>
-            <p><strong><i class="fas fa-venus-mars"></i> Sexo:</strong> ${aluno.sexo}</p>
-            <p><strong><i class="fas fa-chalkboard"></i> Turma:</strong> ${aluno.turma}</p>
-            <p><strong><i class="fas fa-calendar-week"></i> Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
-            <p><strong><i class="fas fa-medal"></i> Modalidades:</strong></p>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
-                ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
-            </div>
-            <p style="margin-top: 15px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertências:</strong> ${aluno.advertencias}</p>
-            <p><strong><i class="fas fa-ban"></i> Suspensões:</strong> ${aluno.suspensoes}</p>
-            <p><strong><i class="fas fa-star"></i> Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
-        </div>
-    `;
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+      </div>
+      <h2>${aluno.nome}</h2>
+      <p><i class="fas fa-id-card"></i> CPF: ***.***.***-${aluno.cpf.slice(-4)}</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+      <div class="${statusClass}" style="padding: 15px; border-radius: 10px; text-align: center;">
+        <span style="font-size: 24px;">${statusIcon}</span>
+        <p style="margin-top: 10px; font-weight: bold;">${statusText}</p>
+        ${dataRetorno ? `<p style="margin-top: 5px; font-size: 12px;">Retorno previsto: ${dataRetorno}</p>` : ""}
+      </div>
+    </div>
+    <div style="border-top: 1px solid #eee; padding-top: 20px;">
+      <p><strong><i class="fas fa-calendar-alt"></i> Data Nascimento:</strong> ${new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")}</p>
+      <p><strong><i class="fas fa-birthday-cake"></i> Idade:</strong> ${aluno.idade} anos</p>
+      <p><strong><i class="fas fa-venus-mars"></i> Sexo:</strong> ${aluno.sexo}</p>
+      <p><strong><i class="fas fa-chalkboard"></i> Turma:</strong> ${aluno.turma}</p>
+      <p><strong><i class="fas fa-calendar-week"></i> Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
+      <p><strong><i class="fas fa-medal"></i> Modalidades:</strong></p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
+        ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
+      </div>
+      <p style="margin-top: 15px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertências:</strong> ${aluno.advertencias}</p>
+      <p><strong><i class="fas fa-ban"></i> Suspensões:</strong> ${aluno.suspensoes}</p>
+      <p><strong><i class="fas fa-star"></i> Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
+    </div>
+  `;
 }
 
 function inicializarSistema() {
   console.log("Inicializando sistema com", alunos.length, "alunos");
+  verificarReativacaoAutomatica();
   atualizarDashboard();
   renderizarAlunos(alunos);
   atualizarEstatisticasSidebar();
@@ -462,7 +547,6 @@ function mudarView(view) {
     .querySelectorAll(".nav-link")
     .forEach((l) => l.classList.remove("active"));
   document.querySelector(`[data-view="${view}"]`).classList.add("active");
-
   document
     .querySelectorAll(".view")
     .forEach((v) => v.classList.remove("active"));
@@ -475,7 +559,6 @@ function mudarView(view) {
     modalidades: "Alunos por Modalidade",
   };
   document.getElementById("pageTitle").textContent = titles[view];
-
   if (view === "dashboard") atualizarDashboard();
 }
 
@@ -565,30 +648,30 @@ function renderizarAlunos(alunosArray) {
       }
 
       return `
-        <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-            <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-            </div>
-            <div class="aluno-info">
-                <h4>${aluno.nome} ${statusIcon}</h4>
-                <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-                <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
-                <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-                <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
-                <div class="aluno-badges">
-                    ${aluno.modalidades
-                      .slice(0, 2)
-                      .map(
-                        (m) =>
-                          `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
-                      )
-                      .join("")}
-                    ${aluno.modalidades.length > 2 ? `<span class="badge badge-modalidade">+${aluno.modalidades.length - 2}</span>` : ""}
-                    ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
-                    ${statusBadge}
-                </div>
-            </div>
-        </div>`;
+      <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+        </div>
+        <div class="aluno-info">
+          <h4>${aluno.nome} ${statusIcon}</h4>
+          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+          <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
+          <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
+          <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
+          <div class="aluno-badges">
+            ${aluno.modalidades
+              .slice(0, 2)
+              .map(
+                (m) =>
+                  `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
+              )
+              .join("")}
+            ${aluno.modalidades.length > 2 ? `<span class="badge badge-modalidade">+${aluno.modalidades.length - 2}</span>` : ""}
+            ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
+            ${statusBadge}
+          </div>
+        </div>
+      </div>`;
     })
     .join("");
 }
@@ -620,21 +703,21 @@ function renderizarAlunosModalidade(alunosArray) {
       }
 
       return `
-        <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-            <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-            </div>
-            <div class="aluno-info">
-                <h4>${aluno.nome}</h4>
-                <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-                <p><i class="fas fa-clock"></i> ${aluno.turma}</p>
-                <p><i class="fas fa-calendar-week"></i> Treinos: ${diasTreinoResumo}</p>
-                <div class="aluno-badges">
-                    ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`).join("")}
-                    ${statusBadge}
-                </div>
-            </div>
-        </div>`;
+      <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+        </div>
+        <div class="aluno-info">
+          <h4>${aluno.nome}</h4>
+          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+          <p><i class="fas fa-clock"></i> ${aluno.turma}</p>
+          <p><i class="fas fa-calendar-week"></i> Treinos: ${diasTreinoResumo}</p>
+          <div class="aluno-badges">
+            ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`).join("")}
+            ${statusBadge}
+          </div>
+        </div>
+      </div>`;
     })
     .join("");
 }
@@ -646,38 +729,46 @@ window.abrirCardAluno = function (id) {
   const isApto = aluno.status === "apto";
   const statusClass = isApto ? "status-apto" : "status-suspenso";
   const statusIcon = isApto ? "✅" : "❌";
+  const periodoSuspensao = !isApto
+    ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
+    : "";
   const statusText = isApto
     ? "Apto para treinar"
-    : aluno.diasSuspensao > 0
-      ? `Suspenso por ${aluno.diasSuspensao} dias`
-      : "Suspenso";
+    : `Suspenso - ${periodoSuspensao}`;
   const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
+  const dataRetorno =
+    !isApto && aluno.dataInicioSuspensao
+      ? formatarDataParaExibicao(
+          calcularDataRetorno(aluno.dataInicioSuspensao, aluno.diasSuspensao),
+        )
+      : null;
 
   const cardContent = document.getElementById("cardContent");
   cardContent.innerHTML = `
-        <div style="text-align: center;">
-            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-            </div>
-            <h2>${aluno.nome}</h2>
-            <div style="margin: 20px 0; text-align: left;">
-                <p><strong>📅 Nascimento:</strong> ${new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")}</p>
-                <p><strong>🎂 Idade:</strong> ${aluno.idade} anos</p>
-                <p><strong>⚧ Sexo:</strong> ${aluno.sexo}</p>
-                <p><strong>🏫 Turma:</strong> ${aluno.turma}</p>
-                <p><strong>⏰ Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
-                <p><strong>🏅 Modalidades:</strong></p>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;">
-                    ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
-                </div>
-                <p><strong>⚠️ Advertências:</strong> ${aluno.advertencias}</p>
-                <p><strong>🚫 Suspensões:</strong> ${aluno.suspensoes}</p>
-                <p><strong>📋 Status:</strong> <span class="${statusClass}" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">${statusIcon} ${statusText}</span></p>
-                <p><strong>⭐ Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
-            </div>
-            <button class="btn-primary" onclick="fecharModalCard()" style="margin-top: 10px;">Fechar</button>
+    <div style="text-align: center;">
+      <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+      </div>
+      <h2>${aluno.nome}</h2>
+      <div style="margin: 20px 0; text-align: left;">
+        <p><strong>📅 Nascimento:</strong> ${new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")}</p>
+        <p><strong>🎂 Idade:</strong> ${aluno.idade} anos</p>
+        <p><strong>⚧ Sexo:</strong> ${aluno.sexo}</p>
+        <p><strong>🏫 Turma:</strong> ${aluno.turma}</p>
+        <p><strong>⏰ Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
+        <p><strong>🏅 Modalidades:</strong></p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;">
+          ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
         </div>
-    `;
+        <p><strong>⚠️ Advertências:</strong> ${aluno.advertencias}</p>
+        <p><strong>🚫 Suspensões:</strong> ${aluno.suspensoes}</p>
+        <p><strong>📋 Status:</strong> <span class="${statusClass}" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">${statusIcon} ${statusText}</span></p>
+        ${dataRetorno ? `<p><strong>📅 Retorno previsto:</strong> ${dataRetorno}</p>` : ""}
+        <p><strong>⭐ Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
+      </div>
+      <button class="btn-primary" onclick="fecharModalCard()" style="margin-top: 10px;">Fechar</button>
+    </div>
+  `;
   document.getElementById("cardModal").style.display = "block";
 };
 
@@ -836,29 +927,29 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
       }
 
       return `
-        <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-            <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-            </div>
-            <div class="aluno-info">
-                <h4>${aluno.nome}</h4>
-                <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-                <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
-                <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-                <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
-                <div class="aluno-badges">
-                    ${aluno.modalidades
-                      .slice(0, 2)
-                      .map(
-                        (m) =>
-                          `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
-                      )
-                      .join("")}
-                    ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
-                    ${statusBadge}
-                </div>
-            </div>
-        </div>`;
+      <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+        </div>
+        <div class="aluno-info">
+          <h4>${aluno.nome}</h4>
+          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+          <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
+          <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
+          <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
+          <div class="aluno-badges">
+            ${aluno.modalidades
+              .slice(0, 2)
+              .map(
+                (m) =>
+                  `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
+              )
+              .join("")}
+            ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
+            ${statusBadge}
+          </div>
+        </div>
+      </div>`;
     })
     .join("");
 }
@@ -887,46 +978,46 @@ function filtrarPorModalidade(modalidade) {
   } else {
     filtrados = alunos.filter((a) => a.modalidades.includes(modalidade));
   }
-
   renderizarAlunosModalidade(filtrados);
 }
 
 function gerarPDFTabela(alunosArray, nomeArquivo) {
   const dataAtual = new Date().toLocaleDateString("pt-BR");
   let tabelaHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head><meta charset="UTF-8"><title>Lista de Alunos - Centro Educacional de Barra Nova</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { text-align: center; color: #2c3e50; font-size: 18px; }
-            .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; font-size: 10px; }
-            th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
-            td { padding: 6px; border: 1px solid #ddd; }
-            tr:nth-child(even) { background: #f9f9f9; }
-            .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-            .status-apto { color: #27ae60; font-weight: bold; }
-            .status-suspenso { color: #e74c3c; font-weight: bold; }
-        </style>
-        </head>
-        <body>
-            <h1>Centro Educacional de Barra Nova</h1>
-            <div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div>
-            <table>
-                <thead><tr><th>ID</th><th>Nome</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Modalidades</th><th>Advert.</th><th>Status</th><th>Média</th></tr></thead>
-                <tbody>`;
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"><title>Lista de Alunos - Centro Educacional de Barra Nova</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      h1 { text-align: center; color: #2c3e50; font-size: 18px; }
+      .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; font-size: 10px; }
+      th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
+      td { padding: 6px; border: 1px solid #ddd; }
+      tr:nth-child(even) { background: #f9f9f9; }
+      .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
+      .status-apto { color: #27ae60; font-weight: bold; }
+      .status-suspenso { color: #e74c3c; font-weight: bold; }
+    </style>
+    </head>
+    <body>
+      <h1>Centro Educacional de Barra Nova</h1>
+      <div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Modalidades</th><th>Advert.</th><th>Status</th><th>Período Suspensão</th><th>Média</th></tr>
+        </thead>
+        <tbody>`;
 
   alunosArray.forEach((aluno) => {
     const isApto = aluno.status === "apto";
-    const statusText = isApto
-      ? "Apto"
-      : aluno.diasSuspensao > 0
-        ? `Suspenso (${aluno.diasSuspensao}d)`
-        : "Suspenso";
+    const statusText = isApto ? "Apto" : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.modalidades.join(", ")}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.advertencias}</td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.mediaGeral.toFixed(1)}</td></tr>`;
+    const periodoSuspensao = !isApto
+      ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
+      : "-";
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${aluno.modalidades.join(", ")}</td><td>${aluno.advertencias}</td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.mediaGeral.toFixed(1)}</td></tr>`;
   });
 
   tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
@@ -951,28 +1042,30 @@ function gerarPDFPorModalidade() {
   const dataAtual = new Date().toLocaleDateString("pt-BR");
 
   let tabelaHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { text-align: center; color: #2c3e50; font-size: 18px; }
-            .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; font-size: 10px; }
-            th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
-            td { padding: 6px; border: 1px solid #ddd; }
-            tr:nth-child(even) { background: #f9f9f9; }
-            .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-            .status-apto { color: #27ae60; font-weight: bold; }
-            .status-suspenso { color: #e74c3c; font-weight: bold; }
-        </style>
-        </head>
-        <body>
-            <h1>Centro Educacional de Barra Nova</h1>
-            <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
-            <table>
-                <thead><tr><th>ID</th><th>Nome</th><th>Status</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Outras Modalidades</th></tr></thead>
-                <tbody>`;
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      h1 { text-align: center; color: #2c3e50; font-size: 18px; }
+      .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; font-size: 10px; }
+      th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
+      td { padding: 6px; border: 1px solid #ddd; }
+      tr:nth-child(even) { background: #f9f9f9; }
+      .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
+      .status-apto { color: #27ae60; font-weight: bold; }
+      .status-suspenso { color: #e74c3c; font-weight: bold; }
+    </style>
+    </head>
+    <body>
+      <h1>Centro Educacional de Barra Nova</h1>
+      <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Status</th><th>Período Suspensão</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Outras Modalidades</th></tr>
+        </thead>
+        <tbody>`;
 
   alunosModalidade.forEach((aluno) => {
     const outras =
@@ -981,7 +1074,10 @@ function gerarPDFPorModalidade() {
     const statusText = isApto ? "Apto" : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
     const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
-    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${outras}</td></tr>`;
+    const periodoSuspensao = !isApto
+      ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
+      : "-";
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td></tr>`;
   });
 
   tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;
