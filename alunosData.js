@@ -2264,7 +2264,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2283,7 +2283,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2302,7 +2302,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2321,7 +2321,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2340,7 +2340,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2359,7 +2359,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2378,7 +2378,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2397,7 +2397,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2416,7 +2416,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2435,7 +2435,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2454,7 +2454,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2473,7 +2473,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2492,7 +2492,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2511,7 +2511,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "8° B",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2530,7 +2530,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "9° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2549,7 +2549,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "9° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
@@ -2568,7 +2568,7 @@ const ALUNOS_CADASTRADOS = [
     turma: "9° A",
     diasTreino: [
       { dia: "Segunda", horario: "14h15-15h15" },
-      { dia: "Quarta", horario: "16h15-17h00" },
+      { dia: "Quinta", horario: "16h15-17h00" },
     ],
     modalidades: ["futsal"],
     advertencias: 0,
