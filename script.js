@@ -77,6 +77,11 @@ const MODALIDADES = [
   "atletismo sub-17 fem",
 ];
 
+// Função para ordenar alunos por nome
+function ordenarAlunosPorNome(alunosArray) {
+  return [...alunosArray].sort((a, b) => a.nome.localeCompare(b.nome));
+}
+
 // Função para calcular idade a partir da data de nascimento
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return 0;
@@ -204,7 +209,6 @@ function carregarAlunosDoArquivo() {
     console.log("Total de alunos carregados:", alunos.length);
 
     alunos.forEach((aluno) => {
-      // Garantir campos padrão
       if (aluno.status === undefined) {
         aluno.status = aluno.suspensoes > 0 ? "suspenso" : "apto";
       }
@@ -212,14 +216,12 @@ function carregarAlunosDoArquivo() {
       if (aluno.dataInicioSuspensao === undefined)
         aluno.dataInicioSuspensao = null;
 
-      // Calcular idade baseada na data de nascimento
       if (aluno.dataNascimento) {
         aluno.idade = calcularIdade(aluno.dataNascimento);
       } else {
         aluno.idade = 0;
       }
 
-      // Garantir campos de treino
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
         aluno.diaTreino = aluno.diasTreino[0].dia;
         aluno.horario = aluno.diasTreino[0].horario;
@@ -228,7 +230,6 @@ function carregarAlunosDoArquivo() {
         if (!aluno.horario) aluno.horario = "07h15-08h15";
       }
 
-      // Verificar suspensão ativa
       if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
         const hoje = new Date();
         const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
@@ -249,7 +250,6 @@ function carregarAlunosDoArquivo() {
       }
     });
     console.log("Alunos processados:", alunos.length);
-    console.log("Primeiro aluno:", alunos[0]);
   } else {
     alunos = [];
     console.error("ALUNOS_CADASTRADOS não encontrado!");
@@ -589,7 +589,7 @@ function inicializarSistema() {
   atualizarIdades();
   verificarReativacaoAutomatica();
   atualizarDashboard();
-  renderizarAlunos(alunos);
+  renderizarAlunos(ordenarAlunosPorNome(alunos));
   atualizarEstatisticasSidebar();
 }
 
@@ -681,13 +681,15 @@ function renderizarAlunos(alunosArray) {
   const container = document.getElementById("alunosList");
   if (!container) return;
 
-  if (alunosArray.length === 0) {
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
+
+  if (alunosOrdenados.length === 0) {
     container.innerHTML =
       '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
     return;
   }
 
-  container.innerHTML = alunosArray
+  container.innerHTML = alunosOrdenados
     .map((aluno) => {
       const isApto = aluno.status === "apto";
       const statusIcon = isApto
@@ -738,13 +740,15 @@ function renderizarAlunosModalidade(alunosArray) {
   const container = document.getElementById("modalidadeResultados");
   if (!container) return;
 
-  if (alunosArray.length === 0) {
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
+
+  if (alunosOrdenados.length === 0) {
     container.innerHTML =
       '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
     return;
   }
 
-  container.innerHTML = alunosArray
+  container.innerHTML = alunosOrdenados
     .map((aluno) => {
       const isApto = aluno.status === "apto";
       const statusBadge = isApto
@@ -965,13 +969,15 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  if (alunosArray.length === 0) {
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
+
+  if (alunosOrdenados.length === 0) {
     container.innerHTML =
       '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
     return;
   }
 
-  container.innerHTML = alunosArray
+  container.innerHTML = alunosOrdenados
     .map((aluno) => {
       const isApto = aluno.status === "apto";
       const statusBadge = isApto
@@ -1043,33 +1049,50 @@ function filtrarPorModalidade(modalidade) {
 
 function gerarPDFTabela(alunosArray, nomeArquivo) {
   const dataAtual = new Date().toLocaleDateString("pt-BR");
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
+
   let tabelaHTML = `
     <!DOCTYPE html>
     <html>
-    <head><meta charset="UTF-8"><title>Lista de Alunos - Centro Educacional de Barra Nova</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 20px; }
-      h1 { text-align: center; color: #2c3e50; font-size: 18px; }
-      .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-      table { width: 100%; border-collapse: collapse; font-size: 10px; }
-      th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
-      td { padding: 6px; border: 1px solid #ddd; }
-      tr:nth-child(even) { background: #f9f9f9; }
-      .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-      .status-apto { color: #27ae60; font-weight: bold; }
-      .status-suspenso { color: #e74c3c; font-weight: bold; }
-    </style>
+    <head>
+      <meta charset="UTF-8">
+      <title>Lista de Alunos - Centro Educacional de Barra Nova</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; color: #2c3e50; font-size: 20px; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #2c3e50; color: white; padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 11px; }
+        td { padding: 8px; border: 1px solid #ddd; font-size: 10px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
+        .status-apto { color: #27ae60; font-weight: bold; }
+        .status-suspenso { color: #e74c3c; font-weight: bold; }
+      </style>
     </head>
     <body>
       <h1>Centro Educacional de Barra Nova</h1>
       <div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div>
-      <tr>
+      <table>
         <thead>
-          <tr><th>ID</th><th>Nome</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Modalidades</th><th>Advert.</th><th>Status</th><th>Período Suspensão</th><th>Média</th></tr>
+          <tr>
+            <th>ID</th>
+            <th>NOME</th>
+            <th>IDADE</th>
+            <th>SEXO</th>
+            <th>TURMA</th>
+            <th>DIAS/HORÁRIOS</th>
+            <th>MODALIDADES</th>
+            <th>ADVERTÊNCIAS</th>
+            <th>STATUS</th>
+            <th>PERÍODO SUSPENSÃO</th>
+            <th>MÉDIA</th>
+          </tr>
         </thead>
-        <tbody>`;
+        <tbody>
+  `;
 
-  alunosArray.forEach((aluno) => {
+  alunosOrdenados.forEach((aluno) => {
     const isApto = aluno.status === "apto";
     const statusText = isApto ? "Apto" : "Suspenso";
     const statusClass = isApto ? "status-apto" : "status-suspenso";
@@ -1078,10 +1101,32 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
     const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
-    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.modalidades.join(", ")}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.advertencias}</td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${periodoSuspensao}</td><td style="padding: 8px; border: 1px solid #ddd;">${mediaFormatada}</td></tr>`;
+
+    tabelaHTML += `
+      <tr>
+        <td>${aluno.id}</td>
+        <td><strong>${aluno.nome}</strong></td>
+        <td>${aluno.idade}</td>
+        <td>${aluno.sexo}</td>
+        <td>${aluno.turma}</td>
+        <td>${diasTreinoTexto}</td>
+        <td>${aluno.modalidades.join(", ")}</td>
+        <td>${aluno.advertencias}</td>
+        <td class="${statusClass}">${statusText}</td>
+        <td>${periodoSuspensao}</td>
+        <td>${mediaFormatada}</td>
+      </tr>
+    `;
   });
 
-  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
+  tabelaHTML += `
+        </tbody>
+      </table>
+      <div class="footer">Total de alunos: ${alunosOrdenados.length}</div>
+    </body>
+    </html>
+  `;
+
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -1100,35 +1145,49 @@ function gerarPDFPorModalidade() {
   const alunosModalidade = alunos.filter((a) =>
     a.modalidades.includes(modalidade),
   );
+  const alunosOrdenados = ordenarAlunosPorNome(alunosModalidade);
   const dataAtual = new Date().toLocaleDateString("pt-BR");
 
   let tabelaHTML = `
     <!DOCTYPE html>
     <html>
-    <head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 20px; }
-      h1 { text-align: center; color: #2c3e50; font-size: 18px; }
-      .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-      table { width: 100%; border-collapse: collapse; font-size: 10px; }
-      th { background: #2c3e50; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
-      td { padding: 6px; border: 1px solid #ddd; }
-      tr:nth-child(even) { background: #f9f9f9; }
-      .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-      .status-apto { color: #27ae60; font-weight: bold; }
-      .status-suspenso { color: #e74c3c; font-weight: bold; }
-    </style>
+    <head>
+      <meta charset="UTF-8">
+      <title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; color: #2c3e50; font-size: 20px; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #2c3e50; color: white; padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 11px; }
+        td { padding: 8px; border: 1px solid #ddd; font-size: 10px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
+        .status-apto { color: #27ae60; font-weight: bold; }
+        .status-suspenso { color: #e74c3c; font-weight: bold; }
+      </style>
     </head>
     <body>
       <h1>Centro Educacional de Barra Nova</h1>
       <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
-      <tr>
+      <table>
         <thead>
-          <tr><th>ID</th><th>Nome</th><th>Status</th><th>Período Suspensão</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Outras Modalidades</th></tr>
+          <tr>
+            <th>ID</th>
+            <th>NOME</th>
+            <th>STATUS</th>
+            <th>PERÍODO SUSPENSÃO</th>
+            <th>IDADE</th>
+            <th>SEXO</th>
+            <th>TURMA</th>
+            <th>DIAS/HORÁRIOS</th>
+            <th>OUTRAS MODALIDADES</th>
+          </tr>
         </thead>
-        <tbody>`;
+        <tbody>
+  `;
 
-  alunosModalidade.forEach((aluno) => {
+  alunosOrdenados.forEach((aluno) => {
     const outras =
       aluno.modalidades.filter((m) => m !== modalidade).join(", ") || "Nenhuma";
     const isApto = aluno.status === "apto";
@@ -1138,10 +1197,30 @@ function gerarPDFPorModalidade() {
     const periodoSuspensao = !isApto
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
-    tabelaHTML += `<td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${periodoSuspensao}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${outras}</td></tr>`;
+
+    tabelaHTML += `
+      <tr>
+        <td>${aluno.id}</td>
+        <td><strong>${aluno.nome}</strong></td>
+        <td class="${statusClass}">${statusText}</td>
+        <td>${periodoSuspensao}</td>
+        <td>${aluno.idade}</td>
+        <td>${aluno.sexo}</td>
+        <td>${aluno.turma}</td>
+        <td>${diasTreinoTexto}</td>
+        <td>${outras}</td>
+      </tr>
+    `;
   });
 
-  tabelaHTML += `</tbody><table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;
+  tabelaHTML += `
+        </tbody>
+      </table>
+      <div class="footer">Total de alunos: ${alunosOrdenados.length}</div>
+    </body>
+    </html>
+  `;
+
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
