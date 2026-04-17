@@ -15,6 +15,7 @@ const PROFESSOR_CREDENTIALS = {
 const MODALIDADES = [
   // Esportes individuais
   "xadrez",
+  "damas",
   "dominó",
 
   // Futsal por categoria
@@ -420,7 +421,7 @@ function preencherModalidades() {
   });
 
   const categorias = {
-    individual: ["xadrez", "dominó"],
+    individual: ["xadrez", "dominó", "damas"],
     futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
     handebol: MODALIDADES.filter((m) => m.startsWith("handebol")),
     volei: MODALIDADES.filter((m) => m.startsWith("vôlei")),
