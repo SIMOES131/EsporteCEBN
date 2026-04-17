@@ -77,12 +77,44 @@ const MODALIDADES = [
   "atletismo sub-17 fem",
 ];
 
+// Função para calcular idade a partir da data de nascimento
+function calcularIdade(dataNascimento) {
+  if (!dataNascimento) return 0;
+  const hoje = new Date();
+  const nascimento = new Date(dataNascimento);
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const mes = hoje.getMonth() - nascimento.getMonth();
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+    idade--;
+  }
+  return idade;
+}
+
+// Função para atualizar as idades de todos os alunos
+function atualizarIdades() {
+  let alteracoes = false;
+  alunos.forEach((aluno) => {
+    if (aluno.dataNascimento) {
+      const novaIdade = calcularIdade(aluno.dataNascimento);
+      if (aluno.idade !== novaIdade) {
+        aluno.idade = novaIdade;
+        alteracoes = true;
+      }
+    }
+  });
+  if (alteracoes) {
+    console.log("Idades atualizadas automaticamente");
+    atualizarDashboard();
+    renderizarAlunos(alunosFiltrados.length > 0 ? alunosFiltrados : alunos);
+  }
+}
+
 // Função para calcular a data de fim da suspensão (último dia suspenso)
 function calcularDataFimSuspensao(dataInicio, dias) {
   if (!dataInicio || dias <= 0) return null;
   const [ano, mes, dia] = dataInicio.split("-").map(Number);
   const data = new Date(ano, mes - 1, dia);
-  data.setDate(data.getDate() + dias - 1); // Subtrai 1 porque o dia inicial conta
+  data.setDate(data.getDate() + dias - 1);
   const anoFim = data.getFullYear();
   const mesFim = String(data.getMonth() + 1).padStart(2, "0");
   const diaFim = String(data.getDate()).padStart(2, "0");
@@ -115,6 +147,14 @@ function formatarPeriodoSuspensao(dataInicio, dias) {
   const dataFim = calcularDataFimSuspensao(dataInicio, dias);
   const fimFormatado = formatarDataParaExibicao(dataFim);
   return `${dias} dias (${inicioFormatado} até ${fimFormatado})`;
+}
+
+// Função para formatar média geral (null ou 0 = "Sem informação")
+function formatarMediaGeral(media) {
+  if (media === null || media === undefined || media === 0) {
+    return "Sem informação";
+  }
+  return media.toFixed(1);
 }
 
 // Função para verificar e reativar alunos automaticamente
@@ -155,18 +195,31 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarEventos();
   preencherModalidades();
   setInterval(verificarReativacaoAutomatica, 60000);
+  setInterval(atualizarIdades, 3600000);
 });
 
 function carregarAlunosDoArquivo() {
   if (typeof ALUNOS_CADASTRADOS !== "undefined") {
     alunos = [...ALUNOS_CADASTRADOS];
+    console.log("Total de alunos carregados:", alunos.length);
+
     alunos.forEach((aluno) => {
+      // Garantir campos padrão
       if (aluno.status === undefined) {
         aluno.status = aluno.suspensoes > 0 ? "suspenso" : "apto";
       }
       if (aluno.diasSuspensao === undefined) aluno.diasSuspensao = 0;
       if (aluno.dataInicioSuspensao === undefined)
         aluno.dataInicioSuspensao = null;
+
+      // Calcular idade baseada na data de nascimento
+      if (aluno.dataNascimento) {
+        aluno.idade = calcularIdade(aluno.dataNascimento);
+      } else {
+        aluno.idade = 0;
+      }
+
+      // Garantir campos de treino
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
         aluno.diaTreino = aluno.diasTreino[0].dia;
         aluno.horario = aluno.diasTreino[0].horario;
@@ -175,6 +228,7 @@ function carregarAlunosDoArquivo() {
         if (!aluno.horario) aluno.horario = "07h15-08h15";
       }
 
+      // Verificar suspensão ativa
       if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
         const hoje = new Date();
         const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
@@ -194,10 +248,11 @@ function carregarAlunosDoArquivo() {
         aluno.status = "apto";
       }
     });
-    console.log("Alunos carregados:", alunos.length);
+    console.log("Alunos processados:", alunos.length);
+    console.log("Primeiro aluno:", alunos[0]);
   } else {
     alunos = [];
-    console.log("Nenhum aluno encontrado");
+    console.error("ALUNOS_CADASTRADOS não encontrado!");
   }
 }
 
@@ -494,6 +549,7 @@ function exibirPainelAluno(aluno) {
           calcularDataRetorno(aluno.dataInicioSuspensao, aluno.diasSuspensao),
         )
       : null;
+  const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
 
   const container = document.getElementById("alunoInfo");
   container.innerHTML = `
@@ -523,13 +579,14 @@ function exibirPainelAluno(aluno) {
       </div>
       <p style="margin-top: 15px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertências:</strong> ${aluno.advertencias}</p>
       <p><strong><i class="fas fa-ban"></i> Suspensões:</strong> ${aluno.suspensoes}</p>
-      <p><strong><i class="fas fa-star"></i> Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
+      <p><strong><i class="fas fa-star"></i> Média Geral:</strong> ${mediaFormatada}</p>
     </div>
   `;
 }
 
 function inicializarSistema() {
   console.log("Inicializando sistema com", alunos.length, "alunos");
+  atualizarIdades();
   verificarReativacaoAutomatica();
   atualizarDashboard();
   renderizarAlunos(alunos);
@@ -639,6 +696,7 @@ function renderizarAlunos(alunosArray) {
       const statusBadge = isApto
         ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
+      const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
 
       let diasTreinoResumo = "";
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
@@ -657,7 +715,7 @@ function renderizarAlunos(alunosArray) {
           <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
           <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
           <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-          <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
+          <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
           <div class="aluno-badges">
             ${aluno.modalidades
               .slice(0, 2)
@@ -742,6 +800,7 @@ window.abrirCardAluno = function (id) {
           calcularDataRetorno(aluno.dataInicioSuspensao, aluno.diasSuspensao),
         )
       : null;
+  const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
 
   const cardContent = document.getElementById("cardContent");
   cardContent.innerHTML = `
@@ -764,7 +823,7 @@ window.abrirCardAluno = function (id) {
         <p><strong>🚫 Suspensões:</strong> ${aluno.suspensoes}</p>
         <p><strong>📋 Status:</strong> <span class="${statusClass}" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">${statusIcon} ${statusText}</span></p>
         ${dataRetorno ? `<p><strong>📅 Retorno previsto:</strong> ${dataRetorno}</p>` : ""}
-        <p><strong>⭐ Média Geral:</strong> ${aluno.mediaGeral.toFixed(1)}</p>
+        <p><strong>⭐ Média Geral:</strong> ${mediaFormatada}</p>
       </div>
       <button class="btn-primary" onclick="fecharModalCard()" style="margin-top: 10px;">Fechar</button>
     </div>
@@ -918,6 +977,7 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
       const statusBadge = isApto
         ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
+      const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
 
       let diasTreinoResumo = "";
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
@@ -936,7 +996,7 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
           <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
           <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
           <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-          <p><i class="fas fa-chart-line"></i> Média: ${aluno.mediaGeral.toFixed(1)}</p>
+          <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
           <div class="aluno-badges">
             ${aluno.modalidades
               .slice(0, 2)
@@ -1003,7 +1063,7 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
     <body>
       <h1>Centro Educacional de Barra Nova</h1>
       <div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div>
-      <table>
+      <tr>
         <thead>
           <tr><th>ID</th><th>Nome</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Modalidades</th><th>Advert.</th><th>Status</th><th>Período Suspensão</th><th>Média</th></tr>
         </thead>
@@ -1017,7 +1077,8 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
     const periodoSuspensao = !isApto
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
-    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${aluno.modalidades.join(", ")}</td><td>${aluno.advertencias}</td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.mediaGeral.toFixed(1)}</td></tr>`;
+    const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+    tabelaHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.modalidades.join(", ")}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.advertencias}</td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${periodoSuspensao}</td><td style="padding: 8px; border: 1px solid #ddd;">${mediaFormatada}</td></tr>`;
   });
 
   tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosArray.length}</div></body></html>`;
@@ -1061,7 +1122,7 @@ function gerarPDFPorModalidade() {
     <body>
       <h1>Centro Educacional de Barra Nova</h1>
       <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
-      <table>
+      <tr>
         <thead>
           <tr><th>ID</th><th>Nome</th><th>Status</th><th>Período Suspensão</th><th>Idade</th><th>Sexo</th><th>Turma</th><th>Dias/Horários</th><th>Outras Modalidades</th></tr>
         </thead>
@@ -1077,10 +1138,10 @@ function gerarPDFPorModalidade() {
     const periodoSuspensao = !isApto
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
-    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td></tr>`;
+    tabelaHTML += `<td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.id}</td><td style="padding: 8px; border: 1px solid #ddd;"><strong>${aluno.nome}</strong></td><td class="${statusClass}" style="padding: 8px; border: 1px solid #ddd;">${statusText}</td><td style="padding: 8px; border: 1px solid #ddd;">${periodoSuspensao}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.idade}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.sexo}</td><td style="padding: 8px; border: 1px solid #ddd;">${aluno.turma}</td><td style="padding: 8px; border: 1px solid #ddd;">${diasTreinoTexto}</td><td style="padding: 8px; border: 1px solid #ddd;">${outras}</td></tr>`;
   });
 
-  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;
+  tabelaHTML += `</tbody><table><div class="footer">Total de alunos: ${alunosModalidade.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
