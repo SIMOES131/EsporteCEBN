@@ -1,15 +1,13 @@
-import { ALUNOS_CADASTRADOS } from "./alunosData.js";
+import ALUNOS_CADASTRADOS from "./alunosData.js";
 
 const cpf = ALUNOS_CADASTRADOS;
 
 function alunosSemCPF() {
-  const alunosSemCPF = cpf.filter((aluno) => aluno.cpf === "SemCPF");
+  const alunosSemCPF = cpf.filter((aluno) => aluno.cpf === id);
   console.log("Alunos sem CPF:");
   console.log(alunosSemCPF);
 }
 alunosSemCPF();
 
-const quantidadeAlunosSemCPF = cpf.filter(
-  (aluno) => aluno.cpf === "SemCPF",
-).length;
+const quantidadeAlunosSemCPF = cpf.filter((aluno) => aluno.cpf === id).length;
 console.log(`Quantidade de alunos sem CPF: ${quantidadeAlunosSemCPF}`);

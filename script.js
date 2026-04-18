@@ -553,7 +553,7 @@ function exibirPainelAluno(aluno) {
     : "";
   const statusText = isApto
     ? "APTO PARA TREINAR"
-    : `SUSPENSO - ${periodoSuspensao}`;
+    : `SUSPENSO DOS TREINOS - ${periodoSuspensao}`;
   const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
   const dataRetorno =
     !isApto && aluno.dataInicioSuspensao
