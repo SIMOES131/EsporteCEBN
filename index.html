@@ -22,7 +22,6 @@
     <div id="loginContainer" class="login-container">
       <div class="login-card">
         <div class="login-header">
-          <!-- Espaço para o logo da escola na tela de login -->
           <div class="logo-container">
             <img
               id="loginLogo"
@@ -69,6 +68,7 @@
           </button>
         </form>
         <div class="login-footer">
+          <small>Professor: usuário: cebn2026 | senha: cebn2002</small><br />
           <small>Aluno: usuário: CPF (somente números) | senha: CPF</small>
         </div>
       </div>
@@ -80,7 +80,6 @@
         <button id="menuToggle" class="menu-toggle">
           <i class="fas fa-bars"></i>
         </button>
-        <!-- Logo pequena no mobile -->
         <div class="mobile-logo">
           <img
             id="mobileLogo"
@@ -97,7 +96,6 @@
 
       <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-          <!-- Espaço para o logo da escola na sidebar -->
           <div class="sidebar-logo-container">
             <img
               id="sidebarLogo"
@@ -144,10 +142,9 @@
       <div class="main-content">
         <div class="top-bar">
           <div class="top-bar-left">
-            <!-- Logo pequena no top bar -->
             <img
               id="topbarLogo"
-              src="./logo.png"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'%3E%3C/path%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'%3E%3C/path%3E%3C/svg%3E"
               alt="Logo"
               class="topbar-logo"
               onerror="this.style.display = 'none'"
@@ -162,6 +159,9 @@
 
         <!-- Dashboard View -->
         <div id="dashboardView" class="view active">
+          <!-- Alertas de Inconsistências -->
+          <div id="alertaInconsistencias" style="display: none"></div>
+
           <div class="stats-grid">
             <div class="stat-card">
               <i class="fas fa-venus-mars"></i>
@@ -281,7 +281,7 @@
                   <option value="13h15-14h15">13h15 - 14h15</option>
                   <option value="14h15-15h15">14h15 - 15h15</option>
                   <option value="15h15-16h15">15h15 - 16h15</option>
-                  <option value="16h15-17h00">16h15 - 17h00</option>
+                  <option value="16h15-17h15">16h15 - 17h15</option>
                 </select>
               </div>
               <div class="filtro-group">
@@ -473,7 +473,13 @@
         <!-- Modalidades View -->
         <div id="modalidadesView" class="view">
           <div class="modalidades-buttons" id="modalidadesButtons"></div>
-          <div class="filtros-actions" style="margin-bottom: 20px">
+          <div
+            class="filtros-actions"
+            style="margin-bottom: 20px; justify-content: space-between"
+          >
+            <button id="limparFiltroModalidadeBtn" class="btn-secondary">
+              <i class="fas fa-eraser"></i> Limpar Filtro
+            </button>
             <button id="gerarPDFModalidadeBtn" class="btn-pdf">
               <i class="fas fa-file-pdf"></i> Gerar PDF desta Modalidade
             </button>
@@ -487,11 +493,10 @@
     <div id="alunoContainer" style="display: none">
       <div class="aluno-dashboard">
         <div class="aluno-header">
-          <!-- Espaço para o logo na tela do aluno -->
           <div class="aluno-logo-container">
             <img
               id="alunoLogo"
-              src="./logo.png"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'%3E%3C/path%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'%3E%3C/path%3E%3C/svg%3E"
               alt="Logo da Escola"
               class="aluno-logo"
               onerror="this.src = 'https://via.placeholder.com/80x80?text=LOGO'"
@@ -511,7 +516,7 @@
       </div>
     </div>
 
-    <!-- Modal Card Aluno (somente visualização - sem edição) -->
+    <!-- Modal Card Aluno -->
     <div id="cardModal" class="modal">
       <div class="modal-content card-modal">
         <div class="modal-header">
@@ -519,89 +524,6 @@
           <span class="close-card">&times;</span>
         </div>
         <div id="cardContent"></div>
-      </div>
-    </div>
-
-    <!-- Modal para Editar Suspensão -->
-    <div id="editSuspensaoModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Gerenciar Suspensão do Aluno</h3>
-          <span class="close-suspensao">&times;</span>
-        </div>
-        <div class="modal-body" style="padding: 20px">
-          <input type="hidden" id="editSuspensaoId" />
-          <div class="form-group">
-            <label
-              ><i class="fas fa-calendar-alt"></i> Data de Início da
-              Suspensão</label
-            >
-            <input
-              type="date"
-              id="editDataInicio"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label><i class="fas fa-clock"></i> Dias de Suspensão</label>
-            <input
-              type="number"
-              id="editDiasSuspensao"
-              min="0"
-              placeholder="Digite 0 para reativar"
-              class="form-control"
-            />
-            <small class="form-text text-muted"
-              >Digite 0 (zero) para reativar o aluno imediatamente</small
-            >
-          </div>
-          <div class="form-group">
-            <label
-              ><i class="fas fa-exclamation-triangle"></i> Advertências</label
-            >
-            <input
-              type="number"
-              id="editAdvertencias"
-              min="0"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group">
-            <label><i class="fas fa-star"></i> Média Geral</label>
-            <input
-              type="number"
-              id="editMedia"
-              step="0.1"
-              min="0"
-              max="10"
-              class="form-control"
-            />
-          </div>
-          <div
-            class="info-box"
-            style="
-              background: #e8f4fd;
-              padding: 10px;
-              border-radius: 8px;
-              margin-top: 15px;
-              border-left: 4px solid #3498db;
-            "
-          >
-            <small
-              ><i class="fas fa-info-circle"></i> Ao definir dias de suspensão,
-              o sistema calculará automaticamente a data de retorno e reativará
-              o aluno após o período.</small
-            >
-          </div>
-          <button
-            id="salvarEdicaoSuspensaoBtn"
-            class="btn-primary"
-            style="width: 100%; margin-top: 20px"
-          >
-            <i class="fas fa-save"></i> Salvar
-          </button>
-        </div>
       </div>
     </div>
 

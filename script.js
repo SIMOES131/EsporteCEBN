@@ -11,85 +11,508 @@ const PROFESSOR_CREDENTIALS = {
   password: "cebn2002",
 };
 
-// Lista completa de modalidades disponíveis
-const MODALIDADES = [
-  // Esportes individuais
-  "xadrez",
-  "damas",
-  "dominó",
+// Regras de idade por modalidade (apenas idade MÁXIMA)
+const REGRAS_MODALIDADES = {
+  // Futsal
+  "futsal sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "futsal sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "futsal sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "futsal sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "futsal sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "futsal sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "futsal sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "futsal sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+  "futsal aberto masc": {
+    idadeMax: 100,
+    sexo: "Masculino",
+    descricao: "Aberto Masculino (sem limite)",
+  },
+  "futsal aberto fem": {
+    idadeMax: 100,
+    sexo: "Feminino",
+    descricao: "Aberto Feminino (sem limite)",
+  },
 
-  // Futsal por categoria
-  "futsal sub-11 masc",
-  "futsal sub-11 fem",
-  "futsal sub-13 masc",
-  "futsal sub-13 fem",
-  "futsal sub-15 masc",
-  "futsal sub-15 fem",
-  "futsal sub-17 masc",
-  "futsal sub-17 fem",
-  "futsal aberto masc",
-  "futsal aberto fem",
+  // Handebol
+  "handebol sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "handebol sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "handebol sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "handebol sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "handebol sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "handebol sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "handebol sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "handebol sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+  "handebol aberto masc": {
+    idadeMax: 100,
+    sexo: "Masculino",
+    descricao: "Aberto Masculino (sem limite)",
+  },
+  "handebol aberto fem": {
+    idadeMax: 100,
+    sexo: "Feminino",
+    descricao: "Aberto Feminino (sem limite)",
+  },
 
-  // Handebol por categoria
-  "handebol sub-11 masc",
-  "handebol sub-11 fem",
-  "handebol sub-13 masc",
-  "handebol sub-13 fem",
-  "handebol sub-15 masc",
-  "handebol sub-15 fem",
-  "handebol sub-17 masc",
-  "handebol sub-17 fem",
-  "handebol aberto masc",
-  "handebol aberto fem",
+  // Vôlei
+  "vôlei sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "vôlei sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "vôlei sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "vôlei sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "vôlei sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "vôlei sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "vôlei sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "vôlei sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+  "vôlei aberto masc": {
+    idadeMax: 100,
+    sexo: "Masculino",
+    descricao: "Aberto Masculino (sem limite)",
+  },
+  "vôlei aberto fem": {
+    idadeMax: 100,
+    sexo: "Feminino",
+    descricao: "Aberto Feminino (sem limite)",
+  },
+  "vôlei misto": {
+    idadeMax: 18,
+    sexo: "Misto",
+    descricao: "Misto (máx 18 anos)",
+  },
 
-  // Vôlei por categoria (incluindo misto)
-  "vôlei sub-11 masc",
-  "vôlei sub-11 fem",
-  "vôlei sub-13 masc",
-  "vôlei sub-13 fem",
-  "vôlei sub-15 masc",
-  "vôlei sub-15 fem",
-  "vôlei sub-17 masc",
-  "vôlei sub-17 fem",
-  "vôlei aberto masc",
-  "vôlei aberto fem",
-  "vôlei misto",
+  // Basquete
+  "basquete sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "basquete sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "basquete sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "basquete sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "basquete sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "basquete sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "basquete sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "basquete sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+  "basquete aberto masc": {
+    idadeMax: 100,
+    sexo: "Masculino",
+    descricao: "Aberto Masculino (sem limite)",
+  },
+  "basquete aberto fem": {
+    idadeMax: 100,
+    sexo: "Feminino",
+    descricao: "Aberto Feminino (sem limite)",
+  },
 
-  // Basquete por categoria
-  "basquete sub-11 masc",
-  "basquete sub-11 fem",
-  "basquete sub-13 masc",
-  "basquete sub-13 fem",
-  "basquete sub-15 masc",
-  "basquete sub-15 fem",
-  "basquete sub-17 masc",
-  "basquete sub-17 fem",
-  "basquete aberto masc",
-  "basquete aberto fem",
+  // Baleado
+  "baleado sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "baleado sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "baleado sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "baleado sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "baleado sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "baleado sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "baleado sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "baleado sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+  "baleado aberto masc": {
+    idadeMax: 100,
+    sexo: "Masculino",
+    descricao: "Aberto Masculino (sem limite)",
+  },
+  "baleado aberto fem": {
+    idadeMax: 100,
+    sexo: "Feminino",
+    descricao: "Aberto Feminino (sem limite)",
+  },
+  "baleado misto": {
+    idadeMax: 18,
+    sexo: "Misto",
+    descricao: "Misto (máx 18 anos)",
+  },
 
-  // Baleado por categoria (incluindo misto)
-  "baleado sub-11 masc",
-  "baleado sub-11 fem",
-  "baleado sub-13 masc",
-  "baleado sub-13 fem",
-  "baleado sub-15 masc",
-  "baleado sub-15 fem",
-  "baleado sub-17 masc",
-  "baleado sub-17 fem",
-  "baleado aberto masc",
-  "baleado aberto fem",
-  "baleado misto",
+  // Atletismo
+  "atletismo sub-11 masc": {
+    idadeMax: 11,
+    sexo: "Masculino",
+    descricao: "Sub-11 Masculino (máx 11 anos)",
+  },
+  "atletismo sub-11 fem": {
+    idadeMax: 11,
+    sexo: "Feminino",
+    descricao: "Sub-11 Feminino (máx 11 anos)",
+  },
+  "atletismo sub-13 masc": {
+    idadeMax: 13,
+    sexo: "Masculino",
+    descricao: "Sub-13 Masculino (máx 13 anos)",
+  },
+  "atletismo sub-13 fem": {
+    idadeMax: 13,
+    sexo: "Feminino",
+    descricao: "Sub-13 Feminino (máx 13 anos)",
+  },
+  "atletismo sub-15 masc": {
+    idadeMax: 15,
+    sexo: "Masculino",
+    descricao: "Sub-15 Masculino (máx 15 anos)",
+  },
+  "atletismo sub-15 fem": {
+    idadeMax: 15,
+    sexo: "Feminino",
+    descricao: "Sub-15 Feminino (máx 15 anos)",
+  },
+  "atletismo sub-17 masc": {
+    idadeMax: 17,
+    sexo: "Masculino",
+    descricao: "Sub-17 Masculino (máx 17 anos)",
+  },
+  "atletismo sub-17 fem": {
+    idadeMax: 17,
+    sexo: "Feminino",
+    descricao: "Sub-17 Feminino (máx 17 anos)",
+  },
+};
 
-  // Atletismo por categoria (sem aberto)
-  "atletismo sub-11 masc",
-  "atletismo sub-11 fem",
-  "atletismo sub-13 masc",
-  "atletismo sub-13 fem",
-  "atletismo sub-15 masc",
-  "atletismo sub-15 fem",
-  "atletismo sub-17 masc",
-  "atletismo sub-17 fem",
-];
+// Função para verificar se a modalidade é compatível com a idade (apenas idade máxima)
+function verificarCompatibilidadeModalidade(aluno, modalidade) {
+  const regra = REGRAS_MODALIDADES[modalidade];
+  if (!regra) return { compatível: true, mensagem: "" };
+
+  const idade = aluno.idade;
+  const sexo = aluno.sexo;
+
+  // Verificar sexo (para modalidades que não são mistas)
+  if (regra.sexo !== "Misto" && regra.sexo !== sexo) {
+    return {
+      compatível: false,
+      mensagem: `⚠️ Modalidade ${regra.descricao} é exclusiva para ${regra.sexo === "Masculino" ? "ALUNOS" : "ALUNAS"}.`,
+      tipo: "sexo",
+    };
+  }
+
+  // Verificar idade máxima (aluno mais velho que o permitido)
+  if (idade > regra.idadeMax && regra.idadeMax !== 100) {
+    return {
+      compatível: false,
+      mensagem: `⚠️ ALERTA: ${aluno.nome} tem ${idade} anos, mas a modalidade ${regra.descricao} permite apenas alunos com até ${regra.idadeMax} anos!`,
+      tipo: "idade",
+    };
+  }
+
+  return { compatível: true, mensagem: "" };
+}
+
+// Função para verificar todas as modalidades de um aluno
+function verificarModalidadesAluno(aluno) {
+  const inconsistencias = [];
+  aluno.modalidades.forEach((modalidade) => {
+    const resultado = verificarCompatibilidadeModalidade(aluno, modalidade);
+    if (!resultado.compatível) {
+      inconsistencias.push(resultado.mensagem);
+    }
+  });
+  return inconsistencias;
+}
+
+// Função para verificar se o aluno tem alguma inconsistência
+function alunoTemInconsistencia(aluno) {
+  return verificarModalidadesAluno(aluno).length > 0;
+}
+
+// Função para gerar alerta no card do aluno
+function gerarAlertaInconsistencia(aluno) {
+  const inconsistencias = verificarModalidadesAluno(aluno);
+  if (inconsistencias.length > 0) {
+    return `
+      <div class="alerta-inconsistencia" style="background: #ffebee; border-left: 4px solid #f44336; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        <i class="fas fa-exclamation-triangle" style="color: #f44336; margin-right: 10px;"></i>
+        <strong>⚠️ INCOMPATIBILIDADE DE IDADE!</strong>
+        <ul style="margin: 5px 0 0 20px; font-size: 12px;">
+          ${inconsistencias.map((inc) => `<li>${inc}</li>`).join("")}
+        </ul>
+        <small style="color: #666; display: block; margin-top: 5px;">Aluno muito velho para esta categoria. Considere realocar para categoria superior ou aberto.</small>
+      </div>
+    `;
+  }
+  return "";
+}
+
+// Função para contar alunos com inconsistências
+function contarAlunosComInconsistencias() {
+  let count = 0;
+  alunos.forEach((aluno) => {
+    if (alunoTemInconsistencia(aluno)) count++;
+  });
+  return count;
+}
+
+// Função para adicionar badge de alerta no card do aluno na lista
+function gerarBadgeAlerta(aluno) {
+  if (alunoTemInconsistencia(aluno)) {
+    return `<span class="badge" style="background: #f44336; color: white; margin-left: 5px;"><i class="fas fa-exclamation-triangle"></i> Incompatível</span>`;
+  }
+  return "";
+}
+
+// Função para mostrar alunos com inconsistências (chamada pelo botão do dashboard)
+window.mostrarAlunosInconsistentes = function () {
+  // Filtrar alunos com inconsistências
+  const alunosInconsistentes = alunos.filter((aluno) =>
+    alunoTemInconsistencia(aluno),
+  );
+
+  // Mudar para a view de Alunos
+  mudarView("alunos");
+
+  // Renderizar apenas os alunos inconsistentes com flag de filtro
+  renderizarAlunosComFiltro(alunosInconsistentes, true);
+};
+
+// Função para renderizar alunos com indicador de filtro
+function renderizarAlunosComFiltro(
+  alunosArray,
+  isFiltroInconsistencia = false,
+) {
+  const container = document.getElementById("alunosList");
+  if (!container) return;
+
+  // Remover mensagem de filtro anterior se existir
+  const mensagemAntiga = document.querySelector(".filtro-mensagem");
+  if (mensagemAntiga) {
+    mensagemAntiga.remove();
+  }
+
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
+
+  if (alunosOrdenados.length === 0) {
+    container.innerHTML =
+      '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
+    return;
+  }
+
+  // Adicionar mensagem de filtro se for filtro de inconsistência
+  if (isFiltroInconsistencia && alunosArray.length > 0) {
+    const mensagem = document.createElement("div");
+    mensagem.className = "filtro-mensagem";
+    mensagem.style.cssText =
+      "background: #ffebee; border: 1px solid #f44336; border-radius: 10px; padding: 10px 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;";
+    mensagem.innerHTML = `
+      <i class="fas fa-exclamation-triangle" style="color: #f44336;"></i>
+      <span><strong>Filtro aplicado:</strong> Mostrando apenas alunos com inconsistências de idade (${alunosArray.length} alunos)</span>
+      <button onclick="limparFiltroInconsistencia();" class="btn-secondary" style="margin-left: auto; padding: 5px 15px; cursor: pointer;">Limpar Filtro</button>
+    `;
+    container.parentNode.insertBefore(mensagem, container);
+  }
+
+  container.innerHTML = alunosOrdenados
+    .map((aluno) => {
+      const isApto = aluno.status === "apto";
+      const statusIcon = isApto
+        ? '<i class="fas fa-check-circle" style="color: #27ae60;"></i>'
+        : '<i class="fas fa-ban" style="color: #e74c3c;"></i>';
+      const statusBadge = isApto
+        ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
+        : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
+      const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+      const alertaBadge = gerarBadgeAlerta(aluno);
+      const temInconsistencia = alunoTemInconsistencia(aluno);
+      const cardBorder = temInconsistencia
+        ? "border-left: 4px solid #f44336;"
+        : "";
+
+      let diasTreinoResumo = "";
+      if (aluno.diasTreino && aluno.diasTreino.length > 0) {
+        diasTreinoResumo = aluno.diasTreino.map((d) => `${d.dia}`).join("/");
+      } else {
+        diasTreinoResumo = aluno.diaTreino || "N/D";
+      }
+
+      return `
+      <div class="aluno-card" style="${cardBorder}" onclick="abrirCardAluno(${aluno.id})">
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
+        </div>
+        <div class="aluno-info">
+          <h4>${aluno.nome} ${statusIcon} ${alertaBadge}</h4>
+          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+          <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
+          <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
+          <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
+          <div class="aluno-badges">
+            ${aluno.modalidades
+              .slice(0, 2)
+              .map(
+                (m) =>
+                  `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
+              )
+              .join("")}
+            ${aluno.modalidades.length > 2 ? `<span class="badge badge-modalidade">+${aluno.modalidades.length - 2}</span>` : ""}
+            ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
+            ${statusBadge}
+          </div>
+        </div>
+      </div>`;
+    })
+    .join("");
+}
+
+// Função para limpar o filtro de inconsistência
+window.limparFiltroInconsistencia = function () {
+  renderizarAlunos(ordenarAlunosPorNome(alunos));
+};
 
 // Função para ordenar alunos por nome
 function ordenarAlunosPorNome(alunosArray) {
@@ -124,7 +547,7 @@ function atualizarIdades() {
   if (alteracoes) {
     console.log("Idades atualizadas automaticamente");
     atualizarDashboard();
-    renderizarAlunos(alunosFiltrados.length > 0 ? alunosFiltrados : alunos);
+    renderizarAlunos(ordenarAlunosPorNome(alunos));
   }
 }
 
@@ -203,10 +626,76 @@ function verificarReativacaoAutomatica() {
 
   if (alteracoes) {
     atualizarDashboard();
-    renderizarAlunos(alunosFiltrados.length > 0 ? alunosFiltrados : alunos);
+    renderizarAlunos(ordenarAlunosPorNome(alunos));
     atualizarEstatisticasSidebar();
   }
 }
+
+// Lista completa de modalidades disponíveis
+const MODALIDADES = [
+  "xadrez",
+  "dominó",
+  "futsal sub-11 masc",
+  "futsal sub-11 fem",
+  "futsal sub-13 masc",
+  "futsal sub-13 fem",
+  "futsal sub-15 masc",
+  "futsal sub-15 fem",
+  "futsal sub-17 masc",
+  "futsal sub-17 fem",
+  "futsal aberto masc",
+  "futsal aberto fem",
+  "handebol sub-11 masc",
+  "handebol sub-11 fem",
+  "handebol sub-13 masc",
+  "handebol sub-13 fem",
+  "handebol sub-15 masc",
+  "handebol sub-15 fem",
+  "handebol sub-17 masc",
+  "handebol sub-17 fem",
+  "handebol aberto masc",
+  "handebol aberto fem",
+  "vôlei sub-11 masc",
+  "vôlei sub-11 fem",
+  "vôlei sub-13 masc",
+  "vôlei sub-13 fem",
+  "vôlei sub-15 masc",
+  "vôlei sub-15 fem",
+  "vôlei sub-17 masc",
+  "vôlei sub-17 fem",
+  "vôlei aberto masc",
+  "vôlei aberto fem",
+  "vôlei misto",
+  "basquete sub-11 masc",
+  "basquete sub-11 fem",
+  "basquete sub-13 masc",
+  "basquete sub-13 fem",
+  "basquete sub-15 masc",
+  "basquete sub-15 fem",
+  "basquete sub-17 masc",
+  "basquete sub-17 fem",
+  "basquete aberto masc",
+  "basquete aberto fem",
+  "baleado sub-11 masc",
+  "baleado sub-11 fem",
+  "baleado sub-13 masc",
+  "baleado sub-13 fem",
+  "baleado sub-15 masc",
+  "baleado sub-15 fem",
+  "baleado sub-17 masc",
+  "baleado sub-17 fem",
+  "baleado aberto masc",
+  "baleado aberto fem",
+  "baleado misto",
+  "atletismo sub-11 masc",
+  "atletismo sub-11 fem",
+  "atletismo sub-13 masc",
+  "atletismo sub-13 fem",
+  "atletismo sub-15 masc",
+  "atletismo sub-15 fem",
+  "atletismo sub-17 masc",
+  "atletismo sub-17 fem",
+];
 
 // Inicialização do sistema
 document.addEventListener("DOMContentLoaded", () => {
@@ -421,7 +910,7 @@ function preencherModalidades() {
   });
 
   const categorias = {
-    individual: ["xadrez", "dominó", "damas"],
+    individual: ["xadrez", "dominó"],
     futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
     handebol: MODALIDADES.filter((m) => m.startsWith("handebol")),
     volei: MODALIDADES.filter((m) => m.startsWith("vôlei")),
@@ -436,52 +925,66 @@ function preencherModalidades() {
       <div class="modalidades-container">
         <div class="modalidades-categoria categoria-individual">
           <h4><i class="fas fa-chess"></i> Esportes Individuais</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-individual">
             ${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-futsal">
           <h4><i class="fas fa-futbol"></i> Futsal</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-futsal">
             ${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-handebol">
           <h4><i class="fas fa-hand-peace"></i> Handebol</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-handebol">
             ${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-volei">
           <h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-volei">
             ${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-basquete">
           <h4><i class="fas fa-basketball-ball"></i> Basquete</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-basquete">
             ${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-baleado">
           <h4><i class="fas fa-crosshairs"></i> Baleado</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-baleado">
             ${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
         <div class="modalidades-categoria categoria-atletismo">
           <h4><i class="fas fa-running"></i> Atletismo</h4>
-          <div class="modalidades-buttons">
+          <div class="modalidades-buttons" id="btn-group-atletismo">
             ${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}
           </div>
         </div>
       </div>
     `;
 
+    // Adicionar evento de clique com destaque visual
     document.querySelectorAll(".btn-modalidade").forEach((btn) => {
       btn.addEventListener("click", () => {
         const modalidade = btn.dataset.modalidade;
+
+        // Remover a classe 'active' de todos os botões da mesma categoria
+        const parentGroup = btn.parentElement;
+        if (parentGroup) {
+          parentGroup.querySelectorAll(".btn-modalidade").forEach((b) => {
+            b.classList.remove("btn-modalidade-active");
+          });
+        }
+
+        // Adicionar classe 'active' ao botão clicado
+        btn.classList.add("btn-modalidade-active");
+
+        // Chamar a função de filtrar
         filtrarPorModalidade(modalidade);
       });
     });
@@ -553,7 +1056,7 @@ function exibirPainelAluno(aluno) {
     : "";
   const statusText = isApto
     ? "APTO PARA TREINAR"
-    : `SUSPENSO DOS TREINOS - ${periodoSuspensao}`;
+    : `SUSPENSO - ${periodoSuspensao}`;
   const diasTreinoTexto = formatarDiasTreino(aluno.diasTreino);
   const dataRetorno =
     !isApto && aluno.dataInicioSuspensao
@@ -562,6 +1065,7 @@ function exibirPainelAluno(aluno) {
         )
       : null;
   const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+  const alertaInconsistencia = gerarAlertaInconsistencia(aluno);
 
   const container = document.getElementById("alunoInfo");
   container.innerHTML = `
@@ -572,6 +1076,7 @@ function exibirPainelAluno(aluno) {
       <h2>${aluno.nome}</h2>
       <p><i class="fas fa-id-card"></i> CPF: ***.***.***-${aluno.cpf.slice(-4)}</p>
     </div>
+    ${alertaInconsistencia}
     <div style="margin-bottom: 20px;">
       <div class="${statusClass}" style="padding: 15px; border-radius: 10px; text-align: center;">
         <span style="font-size: 24px;">${statusIcon}</span>
@@ -638,6 +1143,7 @@ function atualizarDashboard() {
     alunos.length > 0
       ? alunos.reduce((sum, a) => sum + a.idade, 0) / alunos.length
       : 0;
+  const alunosInconsistentes = contarAlunosComInconsistencias();
 
   let turnoManha = 0;
   let turnoTarde = 0;
@@ -687,65 +1193,29 @@ function atualizarDashboard() {
   document.getElementById("turnoTarde").textContent = turnoTarde;
   document.getElementById("aptosTreinar").textContent = aptosTreinar;
   document.getElementById("suspensos").textContent = suspensos;
+
+  // Adicionar alerta de inconsistências no dashboard com botão funcional
+  const alertaContainer = document.getElementById("alertaInconsistencias");
+  if (alertaContainer) {
+    if (alunosInconsistentes > 0) {
+      alertaContainer.innerHTML = `
+        <div class="alerta-global" style="background: #ffebee; border: 1px solid #f44336; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+          <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 24px;"></i>
+          <span style="flex: 1;"><strong>Atenção!</strong> ${alunosInconsistentes} aluno(s) estão inscritos em modalidades incompatíveis com sua idade (alunos mais velhos que o permitido).</span>
+          <button onclick="mostrarAlunosInconsistentes();" class="btn-primary" style="padding: 8px 20px; background: #f44336; border: none; cursor: pointer; border-radius: 5px; color: white;">
+            <i class="fas fa-eye"></i> Ver Alunos
+          </button>
+        </div>
+      `;
+      alertaContainer.style.display = "block";
+    } else {
+      alertaContainer.style.display = "none";
+    }
+  }
 }
 
 function renderizarAlunos(alunosArray) {
-  const container = document.getElementById("alunosList");
-  if (!container) return;
-
-  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
-
-  if (alunosOrdenados.length === 0) {
-    container.innerHTML =
-      '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
-    return;
-  }
-
-  container.innerHTML = alunosOrdenados
-    .map((aluno) => {
-      const isApto = aluno.status === "apto";
-      const statusIcon = isApto
-        ? '<i class="fas fa-check-circle" style="color: #27ae60;"></i>'
-        : '<i class="fas fa-ban" style="color: #e74c3c;"></i>';
-      const statusBadge = isApto
-        ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
-        : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
-      const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
-
-      let diasTreinoResumo = "";
-      if (aluno.diasTreino && aluno.diasTreino.length > 0) {
-        diasTreinoResumo = aluno.diasTreino.map((d) => `${d.dia}`).join("/");
-      } else {
-        diasTreinoResumo = aluno.diaTreino || "N/D";
-      }
-
-      return `
-      <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-        </div>
-        <div class="aluno-info">
-          <h4>${aluno.nome} ${statusIcon}</h4>
-          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-          <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
-          <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-          <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
-          <div class="aluno-badges">
-            ${aluno.modalidades
-              .slice(0, 2)
-              .map(
-                (m) =>
-                  `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
-              )
-              .join("")}
-            ${aluno.modalidades.length > 2 ? `<span class="badge badge-modalidade">+${aluno.modalidades.length - 2}</span>` : ""}
-            ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
-            ${statusBadge}
-          </div>
-        </div>
-      </div>`;
-    })
-    .join("");
+  renderizarAlunosComFiltro(alunosArray, false);
 }
 
 function renderizarAlunosModalidade(alunosArray) {
@@ -766,6 +1236,7 @@ function renderizarAlunosModalidade(alunosArray) {
       const statusBadge = isApto
         ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
+      const alertaBadge = gerarBadgeAlerta(aluno);
 
       let diasTreinoResumo = "";
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
@@ -782,7 +1253,7 @@ function renderizarAlunosModalidade(alunosArray) {
           <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
         </div>
         <div class="aluno-info">
-          <h4>${aluno.nome}</h4>
+          <h4>${aluno.nome} ${alertaBadge}</h4>
           <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
           <p><i class="fas fa-clock"></i> ${aluno.turma}</p>
           <p><i class="fas fa-calendar-week"></i> Treinos: ${diasTreinoResumo}</p>
@@ -817,6 +1288,7 @@ window.abrirCardAluno = function (id) {
         )
       : null;
   const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+  const alertaInconsistencia = gerarAlertaInconsistencia(aluno);
 
   const cardContent = document.getElementById("cardContent");
   cardContent.innerHTML = `
@@ -825,6 +1297,7 @@ window.abrirCardAluno = function (id) {
         <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
       </div>
       <h2>${aluno.nome}</h2>
+      ${alertaInconsistencia}
       <div style="margin: 20px 0; text-align: left;">
         <p><strong>📅 Nascimento:</strong> ${new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")}</p>
         <p><strong>🎂 Idade:</strong> ${aluno.idade} anos</p>
@@ -996,6 +1469,7 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
         ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
       const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+      const alertaBadge = gerarBadgeAlerta(aluno);
 
       let diasTreinoResumo = "";
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
@@ -1010,7 +1484,7 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
           <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
         </div>
         <div class="aluno-info">
-          <h4>${aluno.nome}</h4>
+          <h4>${aluno.nome} ${alertaBadge}</h4>
           <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
           <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
           <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
@@ -1080,6 +1554,7 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
         .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
         .status-apto { color: #27ae60; font-weight: bold; }
         .status-suspenso { color: #e74c3c; font-weight: bold; }
+        .inconsistencia { color: #f44336; font-weight: bold; }
       </style>
     </head>
     <body>
@@ -1099,6 +1574,7 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
             <th>STATUS</th>
             <th>PERÍODO SUSPENSÃO</th>
             <th>MÉDIA</th>
+            <th>INCONSISTÊNCIAS</th>
           </tr>
         </thead>
         <tbody>
@@ -1113,6 +1589,11 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
     const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
+    const temInconsistencia = alunoTemInconsistencia(aluno);
+    const inconsistenciaText = temInconsistencia
+      ? "⚠️ ALERTA: Aluno muito velho para esta categoria!"
+      : "-";
+    const inconsistenciaClass = temInconsistencia ? "inconsistencia" : "";
 
     tabelaHTML += `
       <tr>
@@ -1127,6 +1608,7 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
         <td class="${statusClass}">${statusText}</td>
         <td>${periodoSuspensao}</td>
         <td>${mediaFormatada}</td>
+        <td class="${inconsistenciaClass}">${inconsistenciaText}</td>
       </tr>
     `;
   });
@@ -1177,6 +1659,7 @@ function gerarPDFPorModalidade() {
         .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
         .status-apto { color: #27ae60; font-weight: bold; }
         .status-suspenso { color: #e74c3c; font-weight: bold; }
+        .inconsistencia { color: #f44336; font-weight: bold; }
       </style>
     </head>
     <body>
@@ -1194,6 +1677,7 @@ function gerarPDFPorModalidade() {
             <th>TURMA</th>
             <th>DIAS/HORÁRIOS</th>
             <th>OUTRAS MODALIDADES</th>
+            <th>INCONSISTÊNCIA</th>
           </tr>
         </thead>
         <tbody>
@@ -1209,6 +1693,13 @@ function gerarPDFPorModalidade() {
     const periodoSuspensao = !isApto
       ? formatarPeriodoSuspensao(aluno.dataInicioSuspensao, aluno.diasSuspensao)
       : "-";
+    const regra = REGRAS_MODALIDADES[modalidade];
+    const temInconsistencia =
+      regra && aluno.idade > regra.idadeMax && regra.idadeMax !== 100;
+    const inconsistenciaText = temInconsistencia
+      ? "⚠️ ALERTA: Aluno muito velho para esta categoria!"
+      : "-";
+    const inconsistenciaClass = temInconsistencia ? "inconsistencia" : "";
 
     tabelaHTML += `
       <tr>
@@ -1221,6 +1712,7 @@ function gerarPDFPorModalidade() {
         <td>${aluno.turma}</td>
         <td>${diasTreinoTexto}</td>
         <td>${outras}</td>
+        <td class="${inconsistenciaClass}">${inconsistenciaText}</td>
       </tr>
     `;
   });

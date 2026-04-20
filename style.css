@@ -63,6 +63,21 @@ body {
   font-size: 14px;
 }
 
+.logo-container {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.school-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .input-group-custom {
   position: relative;
   margin-bottom: 20px;
@@ -163,6 +178,17 @@ body {
   gap: 8px;
 }
 
+.mobile-logo {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-logo-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
 .sidebar {
   width: 260px;
   background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
@@ -185,6 +211,20 @@ body {
 .sidebar-header i {
   font-size: 40px;
   margin-bottom: 10px;
+}
+
+.sidebar-logo-container {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.sidebar-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px;
 }
 
 .sidebar-stats {
@@ -275,6 +315,18 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .user-info i {
@@ -572,7 +624,43 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Cores por esporte */
+/* Botão ativo/clicado */
+.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
+  color: #2c3e50 !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid #fff;
+}
+
+.btn-modalidade-active:hover {
+  transform: scale(1.05) translateY(-2px);
+}
+
+/* Cores específicas para cada categoria quando ativo */
+.btn-modalidade-individual.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #e67e22) !important;
+}
+.btn-modalidade-futsal.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #e74c3c) !important;
+}
+.btn-modalidade-handebol.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #2980b9) !important;
+}
+.btn-modalidade-volei.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #27ae60) !important;
+}
+.btn-modalidade-basquete.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #f39c12) !important;
+}
+.btn-modalidade-baleado.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #16a085) !important;
+}
+.btn-modalidade-atletismo.btn-modalidade-active {
+  background: linear-gradient(135deg, #ffd700, #d35400) !important;
+}
+
+/* Cores originais dos botões */
 .btn-modalidade-individual {
   background: linear-gradient(135deg, #9b59b6, #8e44ad);
 }
@@ -593,23 +681,6 @@ body {
 }
 .btn-modalidade-atletismo {
   background: linear-gradient(135deg, #e67e22, #d35400);
-}
-
-/* Botões compactos para telas menores */
-@media (max-width: 768px) {
-  .btn-modalidade {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-
-  .modalidades-categoria h4 {
-    font-size: 16px;
-  }
-}
-
-/* Scroll suave */
-html {
-  scroll-behavior: smooth;
 }
 
 /* Modal */
@@ -656,8 +727,7 @@ html {
 }
 
 .close,
-.close-card,
-.close-edit {
+.close-card {
   font-size: 28px;
   cursor: pointer;
 }
@@ -693,68 +763,6 @@ html {
   margin-bottom: 10px;
 }
 
-.aluno-info-container {
-  max-width: 500px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-/* Logo Styles */
-.logo-container {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.school-logo {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: white;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-logo-container {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.sidebar-logo {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.topbar-logo {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-.mobile-logo {
-  display: flex;
-  align-items: center;
-}
-
-.mobile-logo-img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-}
-
 .aluno-logo-container {
   text-align: center;
   margin-bottom: 20px;
@@ -769,28 +777,15 @@ html {
   padding: 10px;
 }
 
-/* Responsividade para logos */
-@media (max-width: 768px) {
-  .school-logo {
-    width: 60px;
-    height: 60px;
-  }
-
-  .sidebar-logo {
-    width: 50px;
-    height: 50px;
-  }
-
-  .topbar-logo {
-    width: 28px;
-    height: 28px;
-  }
-
-  .aluno-logo {
-    width: 60px;
-    height: 60px;
-  }
+.aluno-info-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
+
 .status-apto {
   background: #27ae60;
   color: white;
@@ -828,6 +823,32 @@ html {
   border: 1px solid #ddd;
   border-radius: 5px;
   margin-top: 5px;
+}
+
+/* Alerta Global */
+.alerta-global {
+  background: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Filtro Mensagem */
+.filtro-mensagem {
+  background: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Responsive */
