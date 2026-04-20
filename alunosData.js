@@ -1129,7 +1129,7 @@ const ALUNOS_CADASTRADOS = [
     id: 58,
     nome: "FABRICIO FEITOZA DA SILVA",
     cpf: "10526666552",
-    dataNascimento: "2012-03-23",
+    dataNascimento: "2014-03-23",
     sexo: "Masculino",
     turma: "7° A",
     diasTreino: [
@@ -3292,3 +3292,24 @@ const ALUNOS_CADASTRADOS = [
 // Nota: O campo "idade" foi removido de todos os alunos acima.
 // A idade será calculada automaticamente pelo sistema no script.js
 // baseada na dataNascimento de cada aluno.
+
+function buscarAlunosSemCpf(alunos) {
+  const alunosSemCpf = alunos.filter((aluno) => {
+    return aluno.cpf === aluno.id.toString() || aluno.cpf === String(aluno.id);
+  });
+
+  console.log("=".repeat(60));
+  console.log(`📋 TOTAL DE ALUNOS COM CPF INVÁLIDO: ${alunosSemCpf.length}`);
+  console.log("=".repeat(60));
+
+  alunosSemCpf.forEach((aluno, index) => {
+    console.log(
+      `${index + 1}. ID: ${aluno.id} | Nome: ${aluno.nome} | CPF incorreto: ${aluno.cpf}`,
+    );
+  });
+
+  return alunosSemCpf;
+}
+
+// EXECUTAR A FUNÇÃO
+const resultado = buscarAlunosSemCpf(ALUNOS_CADASTRADOS);
