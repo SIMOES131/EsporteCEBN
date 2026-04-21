@@ -64,7 +64,6 @@ const REGRAS_MODALIDADES = {
     sexo: "Feminino",
     descricao: "Aberto Feminino (sem limite)",
   },
-
   // Handebol
   "handebol sub-11 masc": {
     idadeMax: 11,
@@ -116,7 +115,6 @@ const REGRAS_MODALIDADES = {
     sexo: "Feminino",
     descricao: "Aberto Feminino (sem limite)",
   },
-
   // Vôlei
   "vôlei sub-11 masc": {
     idadeMax: 11,
@@ -173,7 +171,6 @@ const REGRAS_MODALIDADES = {
     sexo: "Misto",
     descricao: "Misto (máx 18 anos)",
   },
-
   // Basquete
   "basquete sub-11 masc": {
     idadeMax: 11,
@@ -225,7 +222,6 @@ const REGRAS_MODALIDADES = {
     sexo: "Feminino",
     descricao: "Aberto Feminino (sem limite)",
   },
-
   // Baleado
   "baleado sub-11 masc": {
     idadeMax: 11,
@@ -282,7 +278,6 @@ const REGRAS_MODALIDADES = {
     sexo: "Misto",
     descricao: "Misto (máx 18 anos)",
   },
-
   // Atletismo
   "atletismo sub-11 masc": {
     idadeMax: 11,
@@ -326,7 +321,7 @@ const REGRAS_MODALIDADES = {
   },
 };
 
-// Função para verificar se a modalidade é compatível com a idade (apenas idade máxima)
+// Função para verificar se a modalidade é compatível com a idade
 function verificarCompatibilidadeModalidade(aluno, modalidade) {
   const regra = REGRAS_MODALIDADES[modalidade];
   if (!regra) return { compatível: true, mensagem: "" };
@@ -334,7 +329,6 @@ function verificarCompatibilidadeModalidade(aluno, modalidade) {
   const idade = aluno.idade;
   const sexo = aluno.sexo;
 
-  // Verificar sexo (para modalidades que não são mistas)
   if (regra.sexo !== "Misto" && regra.sexo !== sexo) {
     return {
       compatível: false,
@@ -343,7 +337,6 @@ function verificarCompatibilidadeModalidade(aluno, modalidade) {
     };
   }
 
-  // Verificar idade máxima (aluno mais velho que o permitido)
   if (idade > regra.idadeMax && regra.idadeMax !== 100) {
     return {
       compatível: false,
@@ -355,7 +348,6 @@ function verificarCompatibilidadeModalidade(aluno, modalidade) {
   return { compatível: true, mensagem: "" };
 }
 
-// Função para verificar todas as modalidades de um aluno
 function verificarModalidadesAluno(aluno) {
   const inconsistencias = [];
   aluno.modalidades.forEach((modalidade) => {
@@ -367,12 +359,10 @@ function verificarModalidadesAluno(aluno) {
   return inconsistencias;
 }
 
-// Função para verificar se o aluno tem alguma inconsistência
 function alunoTemInconsistencia(aluno) {
   return verificarModalidadesAluno(aluno).length > 0;
 }
 
-// Função para gerar alerta no card do aluno
 function gerarAlertaInconsistencia(aluno) {
   const inconsistencias = verificarModalidadesAluno(aluno);
   if (inconsistencias.length > 0) {
@@ -390,7 +380,6 @@ function gerarAlertaInconsistencia(aluno) {
   return "";
 }
 
-// Função para contar alunos com inconsistências
 function contarAlunosComInconsistencias() {
   let count = 0;
   alunos.forEach((aluno) => {
@@ -399,7 +388,21 @@ function contarAlunosComInconsistencias() {
   return count;
 }
 
-// Função para adicionar badge de alerta no card do aluno na lista
+function contarInconsistenciasPorTipo() {
+  let porIdade = 0;
+  let porSexo = 0;
+  alunos.forEach((aluno) => {
+    aluno.modalidades.forEach((modalidade) => {
+      const resultado = verificarCompatibilidadeModalidade(aluno, modalidade);
+      if (!resultado.compatível) {
+        if (resultado.tipo === "idade") porIdade++;
+        if (resultado.tipo === "sexo") porSexo++;
+      }
+    });
+  });
+  return { porIdade, porSexo };
+}
+
 function gerarBadgeAlerta(aluno) {
   if (alunoTemInconsistencia(aluno)) {
     return `<span class="badge" style="background: #f44336; color: white; margin-left: 5px;"><i class="fas fa-exclamation-triangle"></i> Incompatível</span>`;
@@ -407,21 +410,16 @@ function gerarBadgeAlerta(aluno) {
   return "";
 }
 
-// Função para mostrar alunos com inconsistências (chamada pelo botão do dashboard)
 window.mostrarAlunosInconsistentes = function () {
-  // Filtrar alunos com inconsistências
   const alunosInconsistentes = alunos.filter((aluno) =>
     alunoTemInconsistencia(aluno),
   );
-
-  // Mudar para a view de Alunos
   mudarView("alunos");
-
-  // Renderizar apenas os alunos inconsistentes com flag de filtro
+  const statusSelect = document.getElementById("filtroStatus");
+  if (statusSelect) statusSelect.value = "incompativel";
   renderizarAlunosComFiltro(alunosInconsistentes, true);
 };
 
-// Função para renderizar alunos com indicador de filtro
 function renderizarAlunosComFiltro(
   alunosArray,
   isFiltroInconsistencia = false,
@@ -429,11 +427,8 @@ function renderizarAlunosComFiltro(
   const container = document.getElementById("alunosList");
   if (!container) return;
 
-  // Remover mensagem de filtro anterior se existir
   const mensagemAntiga = document.querySelector(".filtro-mensagem");
-  if (mensagemAntiga) {
-    mensagemAntiga.remove();
-  }
+  if (mensagemAntiga) mensagemAntiga.remove();
 
   const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
 
@@ -443,7 +438,6 @@ function renderizarAlunosComFiltro(
     return;
   }
 
-  // Adicionar mensagem de filtro se for filtro de inconsistência
   if (isFiltroInconsistencia && alunosArray.length > 0) {
     const mensagem = document.createElement("div");
     mensagem.className = "filtro-mensagem";
@@ -472,14 +466,12 @@ function renderizarAlunosComFiltro(
       const cardBorder = temInconsistencia
         ? "border-left: 4px solid #f44336;"
         : "";
-
       let diasTreinoResumo = "";
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
         diasTreinoResumo = aluno.diasTreino.map((d) => `${d.dia}`).join("/");
       } else {
         diasTreinoResumo = aluno.diaTreino || "N/D";
       }
-
       return `
       <div class="aluno-card" style="${cardBorder}" onclick="abrirCardAluno(${aluno.id})">
         <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
@@ -509,17 +501,14 @@ function renderizarAlunosComFiltro(
     .join("");
 }
 
-// Função para limpar o filtro de inconsistência
 window.limparFiltroInconsistencia = function () {
   renderizarAlunos(ordenarAlunosPorNome(alunos));
 };
 
-// Função para ordenar alunos por nome
 function ordenarAlunosPorNome(alunosArray) {
   return [...alunosArray].sort((a, b) => a.nome.localeCompare(b.nome));
 }
 
-// Função para calcular idade a partir da data de nascimento
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return 0;
   const hoje = new Date();
@@ -532,7 +521,6 @@ function calcularIdade(dataNascimento) {
   return idade;
 }
 
-// Função para atualizar as idades de todos os alunos
 function atualizarIdades() {
   let alteracoes = false;
   alunos.forEach((aluno) => {
@@ -551,38 +539,28 @@ function atualizarIdades() {
   }
 }
 
-// Função para calcular a data de fim da suspensão (último dia suspenso)
 function calcularDataFimSuspensao(dataInicio, dias) {
   if (!dataInicio || dias <= 0) return null;
   const [ano, mes, dia] = dataInicio.split("-").map(Number);
   const data = new Date(ano, mes - 1, dia);
   data.setDate(data.getDate() + dias - 1);
-  const anoFim = data.getFullYear();
-  const mesFim = String(data.getMonth() + 1).padStart(2, "0");
-  const diaFim = String(data.getDate()).padStart(2, "0");
-  return `${anoFim}-${mesFim}-${diaFim}`;
+  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}-${String(data.getDate()).padStart(2, "0")}`;
 }
 
-// Função para calcular a data de retorno (dia seguinte ao fim da suspensão)
 function calcularDataRetorno(dataInicio, dias) {
   if (!dataInicio || dias <= 0) return null;
   const [ano, mes, dia] = dataInicio.split("-").map(Number);
   const data = new Date(ano, mes - 1, dia);
   data.setDate(data.getDate() + dias);
-  const anoRetorno = data.getFullYear();
-  const mesRetorno = String(data.getMonth() + 1).padStart(2, "0");
-  const diaRetorno = String(data.getDate()).padStart(2, "0");
-  return `${anoRetorno}-${mesRetorno}-${diaRetorno}`;
+  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, "0")}-${String(data.getDate()).padStart(2, "0")}`;
 }
 
-// Função para formatar data para exibição
 function formatarDataParaExibicao(dataString) {
   if (!dataString) return "";
   const [ano, mes, dia] = dataString.split("-").map(Number);
   return `${dia.toString().padStart(2, "0")}/${mes.toString().padStart(2, "0")}/${ano}`;
 }
 
-// Função para formatar o período de suspensão
 function formatarPeriodoSuspensao(dataInicio, dias) {
   if (!dataInicio || dias <= 0) return "";
   const inicioFormatado = formatarDataParaExibicao(dataInicio);
@@ -591,20 +569,16 @@ function formatarPeriodoSuspensao(dataInicio, dias) {
   return `${dias} dias (${inicioFormatado} até ${fimFormatado})`;
 }
 
-// Função para formatar média geral (null ou 0 = "Sem informação")
 function formatarMediaGeral(media) {
-  if (media === null || media === undefined || media === 0) {
+  if (media === null || media === undefined || media === 0)
     return "Sem informação";
-  }
   return media.toFixed(1);
 }
 
-// Função para verificar e reativar alunos automaticamente
 function verificarReativacaoAutomatica() {
   const hoje = new Date();
   const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
   let alteracoes = false;
-
   alunos.forEach((aluno) => {
     if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
       const dataFim = calcularDataFimSuspensao(
@@ -617,13 +591,9 @@ function verificarReativacaoAutomatica() {
         aluno.diasSuspensao = 0;
         aluno.dataInicioSuspensao = null;
         alteracoes = true;
-        console.log(
-          `Aluno ${aluno.nome} foi reativado automaticamente em ${formatarDataParaExibicao(hojeStr)}`,
-        );
       }
     }
   });
-
   if (alteracoes) {
     atualizarDashboard();
     renderizarAlunos(ordenarAlunosPorNome(alunos));
@@ -631,7 +601,6 @@ function verificarReativacaoAutomatica() {
   }
 }
 
-// Lista completa de modalidades disponíveis
 const MODALIDADES = [
   "xadrez",
   "dominó",
@@ -697,7 +666,6 @@ const MODALIDADES = [
   "atletismo sub-17 fem",
 ];
 
-// Inicialização do sistema
 document.addEventListener("DOMContentLoaded", () => {
   carregarAlunosDoArquivo();
   inicializarEventos();
@@ -710,21 +678,15 @@ function carregarAlunosDoArquivo() {
   if (typeof ALUNOS_CADASTRADOS !== "undefined") {
     alunos = [...ALUNOS_CADASTRADOS];
     console.log("Total de alunos carregados:", alunos.length);
-
     alunos.forEach((aluno) => {
-      if (aluno.status === undefined) {
+      if (aluno.status === undefined)
         aluno.status = aluno.suspensoes > 0 ? "suspenso" : "apto";
-      }
       if (aluno.diasSuspensao === undefined) aluno.diasSuspensao = 0;
       if (aluno.dataInicioSuspensao === undefined)
         aluno.dataInicioSuspensao = null;
-
-      if (aluno.dataNascimento) {
+      if (aluno.dataNascimento)
         aluno.idade = calcularIdade(aluno.dataNascimento);
-      } else {
-        aluno.idade = 0;
-      }
-
+      else aluno.idade = 0;
       if (aluno.diasTreino && aluno.diasTreino.length > 0) {
         aluno.diaTreino = aluno.diasTreino[0].dia;
         aluno.horario = aluno.diasTreino[0].horario;
@@ -732,7 +694,6 @@ function carregarAlunosDoArquivo() {
         if (!aluno.diaTreino) aluno.diaTreino = "Segunda";
         if (!aluno.horario) aluno.horario = "07h15-08h15";
       }
-
       if (aluno.diasSuspensao > 0 && aluno.dataInicioSuspensao) {
         const hoje = new Date();
         const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
@@ -752,7 +713,6 @@ function carregarAlunosDoArquivo() {
         aluno.status = "apto";
       }
     });
-    console.log("Alunos processados:", alunos.length);
   } else {
     alunos = [];
     console.error("ALUNOS_CADASTRADOS não encontrado!");
@@ -761,27 +721,20 @@ function carregarAlunosDoArquivo() {
 
 function inicializarEventos() {
   const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", fazerLogin);
-  }
-
+  if (loginForm) loginForm.addEventListener("submit", fazerLogin);
   document.getElementById("logoutBtn")?.addEventListener("click", fazerLogout);
   document
     .getElementById("alunoLogoutBtn")
     ?.addEventListener("click", fazerLogoutAluno);
   document.getElementById("menuToggle")?.addEventListener("click", toggleMenu);
-
   document.querySelectorAll(".nav-link").forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const view = link.dataset.view;
       mudarView(view);
-      if (window.innerWidth <= 768) {
-        toggleMenu();
-      }
+      if (window.innerWidth <= 768) toggleMenu();
     });
   });
-
   document
     .getElementById("gerarPDFBtn")
     ?.addEventListener("click", () =>
@@ -802,7 +755,6 @@ function inicializarEventos() {
   document
     .getElementById("limparBuscaBtn")
     ?.addEventListener("click", limparBusca);
-
   document
     .getElementById("searchNome")
     ?.addEventListener("input", () => aplicarFiltros());
@@ -821,17 +773,13 @@ function inicializarEventos() {
   document
     .getElementById("buscaIdadeMax")
     ?.addEventListener("input", () => buscaAvancada());
-
   document
     .querySelector(".close-card")
     ?.addEventListener("click", () => fecharModal("cardModal"));
-
   window.onclick = (event) => {
-    if (event.target.classList.contains("modal")) {
+    if (event.target.classList.contains("modal"))
       event.target.style.display = "none";
-    }
   };
-
   document.addEventListener("click", (event) => {
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
@@ -843,9 +791,8 @@ function inicializarEventos() {
       if (
         !sidebar.contains(event.target) &&
         !menuToggle?.contains(event.target)
-      ) {
+      )
         sidebar.classList.remove("open");
-      }
     }
   });
 }
@@ -875,7 +822,6 @@ function preencherModalidades() {
         ).join("");
     }
   });
-
   const turmas = [
     "6° A",
     "6° B",
@@ -898,7 +844,6 @@ function preencherModalidades() {
     "Módulo IV",
     "Módulo V",
   ];
-
   const turmaSelects = ["filtroTurma", "buscaTurma"];
   turmaSelects.forEach((selectId) => {
     const select = document.getElementById(selectId);
@@ -908,7 +853,6 @@ function preencherModalidades() {
         turmas.map((t) => `<option value="${t}">${t}</option>`).join("");
     }
   });
-
   const categorias = {
     individual: ["xadrez", "dominó"],
     futsal: MODALIDADES.filter((m) => m.startsWith("futsal")),
@@ -918,73 +862,28 @@ function preencherModalidades() {
     baleado: MODALIDADES.filter((m) => m.startsWith("baleado")),
     atletismo: MODALIDADES.filter((m) => m.startsWith("atletismo")),
   };
-
   const container = document.getElementById("modalidadesButtons");
   if (container) {
     container.innerHTML = `
       <div class="modalidades-container">
-        <div class="modalidades-categoria categoria-individual">
-          <h4><i class="fas fa-chess"></i> Esportes Individuais</h4>
-          <div class="modalidades-buttons" id="btn-group-individual">
-            ${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-futsal">
-          <h4><i class="fas fa-futbol"></i> Futsal</h4>
-          <div class="modalidades-buttons" id="btn-group-futsal">
-            ${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-handebol">
-          <h4><i class="fas fa-hand-peace"></i> Handebol</h4>
-          <div class="modalidades-buttons" id="btn-group-handebol">
-            ${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-volei">
-          <h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4>
-          <div class="modalidades-buttons" id="btn-group-volei">
-            ${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-basquete">
-          <h4><i class="fas fa-basketball-ball"></i> Basquete</h4>
-          <div class="modalidades-buttons" id="btn-group-basquete">
-            ${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-baleado">
-          <h4><i class="fas fa-crosshairs"></i> Baleado</h4>
-          <div class="modalidades-buttons" id="btn-group-baleado">
-            ${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
-        <div class="modalidades-categoria categoria-atletismo">
-          <h4><i class="fas fa-running"></i> Atletismo</h4>
-          <div class="modalidades-buttons" id="btn-group-atletismo">
-            ${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}
-          </div>
-        </div>
+        <div class="modalidades-categoria categoria-individual"><h4><i class="fas fa-chess"></i> Esportes Individuais</h4><div class="modalidades-buttons">${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-futsal"><h4><i class="fas fa-futbol"></i> Futsal</h4><div class="modalidades-buttons">${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-handebol"><h4><i class="fas fa-hand-peace"></i> Handebol</h4><div class="modalidades-buttons">${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-volei"><h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4><div class="modalidades-buttons">${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-basquete"><h4><i class="fas fa-basketball-ball"></i> Basquete</h4><div class="modalidades-buttons">${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-baleado"><h4><i class="fas fa-crosshairs"></i> Baleado</h4><div class="modalidades-buttons">${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}</div></div>
+        <div class="modalidades-categoria categoria-atletismo"><h4><i class="fas fa-running"></i> Atletismo</h4><div class="modalidades-buttons">${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}</div></div>
       </div>
     `;
-
-    // Adicionar evento de clique com destaque visual
     document.querySelectorAll(".btn-modalidade").forEach((btn) => {
       btn.addEventListener("click", () => {
         const modalidade = btn.dataset.modalidade;
-
-        // Remover a classe 'active' de todos os botões da mesma categoria
         const parentGroup = btn.parentElement;
-        if (parentGroup) {
-          parentGroup.querySelectorAll(".btn-modalidade").forEach((b) => {
-            b.classList.remove("btn-modalidade-active");
-          });
-        }
-
-        // Adicionar classe 'active' ao botão clicado
+        if (parentGroup)
+          parentGroup
+            .querySelectorAll(".btn-modalidade")
+            .forEach((b) => b.classList.remove("btn-modalidade-active"));
         btn.classList.add("btn-modalidade-active");
-
-        // Chamar a função de filtrar
         filtrarPorModalidade(modalidade);
       });
     });
@@ -998,7 +897,6 @@ function fazerLogin(e) {
   const userType = document.querySelector(
     'input[name="userType"]:checked',
   ).value;
-
   if (userType === "professor") {
     if (
       username === PROFESSOR_CREDENTIALS.username &&
@@ -1066,7 +964,6 @@ function exibirPainelAluno(aluno) {
       : null;
   const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
   const alertaInconsistencia = gerarAlertaInconsistencia(aluno);
-
   const container = document.getElementById("alunoInfo");
   container.innerHTML = `
     <div style="text-align: center; margin-bottom: 20px;">
@@ -1091,9 +988,7 @@ function exibirPainelAluno(aluno) {
       <p><strong><i class="fas fa-chalkboard"></i> Turma:</strong> ${aluno.turma}</p>
       <p><strong><i class="fas fa-calendar-week"></i> Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
       <p><strong><i class="fas fa-medal"></i> Modalidades:</strong></p>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
-        ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
-      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}</div>
       <p style="margin-top: 15px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertências:</strong> ${aluno.advertencias}</p>
       <p><strong><i class="fas fa-ban"></i> Suspensões:</strong> ${aluno.suspensoes}</p>
       <p><strong><i class="fas fa-star"></i> Média Geral:</strong> ${mediaFormatada}</p>
@@ -1102,7 +997,6 @@ function exibirPainelAluno(aluno) {
 }
 
 function inicializarSistema() {
-  console.log("Inicializando sistema com", alunos.length, "alunos");
   atualizarIdades();
   verificarReativacaoAutomatica();
   atualizarDashboard();
@@ -1125,10 +1019,9 @@ function mudarView(view) {
     .querySelectorAll(".view")
     .forEach((v) => v.classList.remove("active"));
   document.getElementById(`${view}View`).classList.add("active");
-
   const titles = {
-    dashboard: "Dashboard - Centro Educacional de Barra Nova",
-    alunos: "Alunos - Centro Educacional de Barra Nova",
+    dashboard: "Dashboard",
+    alunos: "Alunos",
     busca: "Busca Avançada",
     modalidades: "Alunos por Modalidade",
   };
@@ -1144,10 +1037,9 @@ function atualizarDashboard() {
       ? alunos.reduce((sum, a) => sum + a.idade, 0) / alunos.length
       : 0;
   const alunosInconsistentes = contarAlunosComInconsistencias();
-
-  let turnoManha = 0;
-  let turnoTarde = 0;
-
+  const { porIdade, porSexo } = contarInconsistenciasPorTipo();
+  let turnoManha = 0,
+    turnoTarde = 0;
   alunos.forEach((aluno) => {
     if (aluno.diasTreino && aluno.diasTreino.length > 0) {
       const primeiroHorario = aluno.diasTreino[0].horario;
@@ -1156,33 +1048,28 @@ function atualizarDashboard() {
         primeiroHorario.includes("08") ||
         primeiroHorario.includes("09") ||
         primeiroHorario.includes("10")
-      ) {
+      )
         turnoManha++;
-      } else if (
+      else if (
         primeiroHorario.includes("13") ||
         primeiroHorario.includes("14") ||
         primeiroHorario.includes("15") ||
         primeiroHorario.includes("16")
-      ) {
+      )
         turnoTarde++;
-      }
     } else if (aluno.horario) {
       if (
         aluno.horario.includes("07") ||
         aluno.horario.includes("08") ||
         aluno.horario.includes("09") ||
         aluno.horario.includes("10")
-      ) {
+      )
         turnoManha++;
-      } else {
-        turnoTarde++;
-      }
+      else turnoTarde++;
     }
   });
-
   const aptosTreinar = alunos.filter((a) => a.status === "apto").length;
   const suspensos = alunos.filter((a) => a.status === "suspenso").length;
-
   document.getElementById("statMasculino").textContent = masculino;
   document.getElementById("statFeminino").textContent = feminino;
   document.getElementById("mediaIdade").textContent = mediaIdade
@@ -1193,18 +1080,22 @@ function atualizarDashboard() {
   document.getElementById("turnoTarde").textContent = turnoTarde;
   document.getElementById("aptosTreinar").textContent = aptosTreinar;
   document.getElementById("suspensos").textContent = suspensos;
-
-  // Adicionar alerta de inconsistências no dashboard com botão funcional
   const alertaContainer = document.getElementById("alertaInconsistencias");
   if (alertaContainer) {
     if (alunosInconsistentes > 0) {
       alertaContainer.innerHTML = `
-        <div class="alerta-global" style="background: #ffebee; border: 1px solid #f44336; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-          <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 24px;"></i>
-          <span style="flex: 1;"><strong>Atenção!</strong> ${alunosInconsistentes} aluno(s) estão inscritos em modalidades incompatíveis com sua idade (alunos mais velhos que o permitido).</span>
-          <button onclick="mostrarAlunosInconsistentes();" class="btn-primary" style="padding: 8px 20px; background: #f44336; border: none; cursor: pointer; border-radius: 5px; color: white;">
-            <i class="fas fa-eye"></i> Ver Alunos
-          </button>
+        <div class="alerta-global" style="background: #ffebee; border: 1px solid #f44336; border-radius: 10px; padding: 12px 20px; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 24px;"></i>
+            <span style="flex: 1;"><strong>Atenção!</strong> ${alunosInconsistentes} aluno(s) estão com inscrições incompatíveis.</span>
+            <button onclick="mostrarAlunosInconsistentes();" class="btn-primary" style="padding: 8px 20px; background: #f44336; border: none; cursor: pointer; border-radius: 5px; color: white;">
+              <i class="fas fa-eye"></i> Ver Alunos
+            </button>
+          </div>
+          <div style="display: flex; gap: 20px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #ffcdd2; font-size: 12px;">
+            <span><i class="fas fa-calendar-alt"></i> Problemas de idade: ${porIdade}</span>
+            <span><i class="fas fa-venus-mars"></i> Problemas de sexo: ${porSexo}</span>
+          </div>
         </div>
       `;
       alertaContainer.style.display = "block";
@@ -1221,15 +1112,12 @@ function renderizarAlunos(alunosArray) {
 function renderizarAlunosModalidade(alunosArray) {
   const container = document.getElementById("modalidadeResultados");
   if (!container) return;
-
   const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
-
   if (alunosOrdenados.length === 0) {
     container.innerHTML =
       '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
     return;
   }
-
   container.innerHTML = alunosOrdenados
     .map((aluno) => {
       const isApto = aluno.status === "apto";
@@ -1237,31 +1125,21 @@ function renderizarAlunosModalidade(alunosArray) {
         ? '<span class="badge" style="background: #27ae60; color: white;">APTO</span>'
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
       const alertaBadge = gerarBadgeAlerta(aluno);
-
       let diasTreinoResumo = "";
-      if (aluno.diasTreino && aluno.diasTreino.length > 0) {
+      if (aluno.diasTreino && aluno.diasTreino.length > 0)
         diasTreinoResumo = aluno.diasTreino
           .map((d) => `${d.dia} ${d.horario}`)
           .join(" e ");
-      } else {
+      else
         diasTreinoResumo = `${aluno.diaTreino || "N/D"} ${aluno.horario || ""}`;
-      }
-
       return `
       <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-        </div>
-        <div class="aluno-info">
-          <h4>${aluno.nome} ${alertaBadge}</h4>
-          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-          <p><i class="fas fa-clock"></i> ${aluno.turma}</p>
-          <p><i class="fas fa-calendar-week"></i> Treinos: ${diasTreinoResumo}</p>
-          <div class="aluno-badges">
-            ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`).join("")}
-            ${statusBadge}
-          </div>
-        </div>
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i></div>
+        <div class="aluno-info"><h4>${aluno.nome} ${alertaBadge}</h4>
+        <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+        <p><i class="fas fa-clock"></i> ${aluno.turma}</p>
+        <p><i class="fas fa-calendar-week"></i> Treinos: ${diasTreinoResumo}</p>
+        <div class="aluno-badges">${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`).join("")}${statusBadge}</div></div>
       </div>`;
     })
     .join("");
@@ -1270,7 +1148,6 @@ function renderizarAlunosModalidade(alunosArray) {
 window.abrirCardAluno = function (id) {
   const aluno = alunos.find((a) => a.id === id);
   if (!aluno) return;
-
   const isApto = aluno.status === "apto";
   const statusClass = isApto ? "status-apto" : "status-suspenso";
   const statusIcon = isApto ? "✅" : "❌";
@@ -1289,13 +1166,10 @@ window.abrirCardAluno = function (id) {
       : null;
   const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
   const alertaInconsistencia = gerarAlertaInconsistencia(aluno);
-
   const cardContent = document.getElementById("cardContent");
   cardContent.innerHTML = `
     <div style="text-align: center;">
-      <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-        <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-      </div>
+      <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;"><i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i></div>
       <h2>${aluno.nome}</h2>
       ${alertaInconsistencia}
       <div style="margin: 20px 0; text-align: left;">
@@ -1305,9 +1179,7 @@ window.abrirCardAluno = function (id) {
         <p><strong>🏫 Turma:</strong> ${aluno.turma}</p>
         <p><strong>⏰ Dias e Horários de Treino:</strong> ${diasTreinoTexto}</p>
         <p><strong>🏅 Modalidades:</strong></p>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;">
-          ${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}
-        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;">${aluno.modalidades.map((m) => `<span class="badge badge-modalidade">${m}</span>`).join("")}</div>
         <p><strong>⚠️ Advertências:</strong> ${aluno.advertencias}</p>
         <p><strong>🚫 Suspensões:</strong> ${aluno.suspensoes}</p>
         <p><strong>📋 Status:</strong> <span class="${statusClass}" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">${statusIcon} ${statusText}</span></p>
@@ -1330,47 +1202,39 @@ function fecharModal(modalId) {
 
 function aplicarFiltros() {
   let filtrados = [...alunos];
-
   const nome = document.getElementById("searchNome")?.value.toLowerCase() || "";
   if (nome)
     filtrados = filtrados.filter((a) => a.nome.toLowerCase().includes(nome));
-
   const idadeMin = document.getElementById("filtroIdadeMin")?.value;
   if (idadeMin)
     filtrados = filtrados.filter((a) => a.idade >= parseInt(idadeMin));
-
   const idadeMax = document.getElementById("filtroIdadeMax")?.value;
   if (idadeMax)
     filtrados = filtrados.filter((a) => a.idade <= parseInt(idadeMax));
-
   const dia = document.getElementById("filtroDia").value;
   if (dia)
     filtrados = filtrados.filter(
       (a) => a.diasTreino && a.diasTreino.some((t) => t.dia === dia),
     );
-
   const horario = document.getElementById("filtroHorario").value;
   if (horario)
     filtrados = filtrados.filter(
       (a) => a.diasTreino && a.diasTreino.some((t) => t.horario === horario),
     );
-
   const turma = document.getElementById("filtroTurma").value;
   if (turma) filtrados = filtrados.filter((a) => a.turma === turma);
-
   const sexo = document.getElementById("filtroSexo").value;
   if (sexo) filtrados = filtrados.filter((a) => a.sexo === sexo);
-
   const modalidade = document.getElementById("filtroModalidade").value;
   if (modalidade)
     filtrados = filtrados.filter((a) => a.modalidades.includes(modalidade));
-
   const status = document.getElementById("filtroStatus").value;
   if (status === "apto")
     filtrados = filtrados.filter((a) => a.status === "apto");
   if (status === "suspenso")
     filtrados = filtrados.filter((a) => a.status === "suspenso");
-
+  if (status === "incompativel")
+    filtrados = filtrados.filter((a) => alunoTemInconsistencia(a));
   alunosFiltrados = filtrados;
   renderizarAlunos(filtrados);
 }
@@ -1388,80 +1252,63 @@ function limparFiltros() {
 
 function buscaAvancada() {
   let filtrados = [...alunos];
-
   const nome = document.getElementById("buscaNome")?.value.toLowerCase() || "";
   if (nome)
     filtrados = filtrados.filter((a) => a.nome.toLowerCase().includes(nome));
-
   const idadeMin = document.getElementById("buscaIdadeMin")?.value;
   if (idadeMin)
     filtrados = filtrados.filter((a) => a.idade >= parseInt(idadeMin));
-
   const idadeMax = document.getElementById("buscaIdadeMax")?.value;
   if (idadeMax)
     filtrados = filtrados.filter((a) => a.idade <= parseInt(idadeMax));
-
   const dia = document.getElementById("buscaDia").value;
   if (dia)
     filtrados = filtrados.filter(
       (a) => a.diasTreino && a.diasTreino.some((t) => t.dia === dia),
     );
-
   const horario = document.getElementById("buscaHorario").value;
   if (horario)
     filtrados = filtrados.filter(
       (a) => a.diasTreino && a.diasTreino.some((t) => t.horario === horario),
     );
-
   const turma = document.getElementById("buscaTurma").value;
   if (turma) filtrados = filtrados.filter((a) => a.turma === turma);
-
   const sexo = document.getElementById("buscaSexo").value;
   if (sexo) filtrados = filtrados.filter((a) => a.sexo === sexo);
-
   const modalidade = document.getElementById("buscaModalidade").value;
   if (modalidade)
     filtrados = filtrados.filter((a) => a.modalidades.includes(modalidade));
-
   const advertencias = document.getElementById("buscaAdvertencias").value;
   if (advertencias)
     filtrados = filtrados.filter(
       (a) => a.advertencias <= parseInt(advertencias),
     );
-
   const suspensoes = document.getElementById("buscaSuspensoes").value;
   if (suspensoes)
     filtrados = filtrados.filter((a) => a.suspensoes <= parseInt(suspensoes));
-
   const status = document.getElementById("buscaStatus")?.value;
   if (status === "apto")
     filtrados = filtrados.filter((a) => a.status === "apto");
   if (status === "suspenso")
     filtrados = filtrados.filter((a) => a.status === "suspenso");
-
   const mediaMin = document.getElementById("buscaMediaMin").value;
   if (mediaMin)
     filtrados = filtrados.filter((a) => a.mediaGeral >= parseFloat(mediaMin));
-
   const mediaMax = document.getElementById("buscaMediaMax").value;
   if (mediaMax)
     filtrados = filtrados.filter((a) => a.mediaGeral <= parseFloat(mediaMax));
-
   renderizarAlunosGridBusca(filtrados, "buscaResultados");
 }
 
 function renderizarAlunosGridBusca(alunosArray, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
   const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
-
   if (alunosOrdenados.length === 0) {
     container.innerHTML =
       '<div class="no-results"><i class="fas fa-search"></i><p>Nenhum aluno encontrado</p></div>';
     return;
   }
-
   container.innerHTML = alunosOrdenados
     .map((aluno) => {
       const isApto = aluno.status === "apto";
@@ -1470,37 +1317,27 @@ function renderizarAlunosGridBusca(alunosArray, containerId) {
         : '<span class="badge" style="background: #e74c3c; color: white;">SUSPENSO</span>';
       const mediaFormatada = formatarMediaGeral(aluno.mediaGeral);
       const alertaBadge = gerarBadgeAlerta(aluno);
-
       let diasTreinoResumo = "";
-      if (aluno.diasTreino && aluno.diasTreino.length > 0) {
+      if (aluno.diasTreino && aluno.diasTreino.length > 0)
         diasTreinoResumo = aluno.diasTreino.map((d) => `${d.dia}`).join("/");
-      } else {
-        diasTreinoResumo = aluno.diaTreino || "N/D";
-      }
-
+      else diasTreinoResumo = aluno.diaTreino || "N/D";
       return `
       <div class="aluno-card" onclick="abrirCardAluno(${aluno.id})">
-        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-          <i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i>
-        </div>
-        <div class="aluno-info">
-          <h4>${aluno.nome} ${alertaBadge}</h4>
-          <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
-          <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
-          <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
-          <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
-          <div class="aluno-badges">
-            ${aluno.modalidades
-              .slice(0, 2)
-              .map(
-                (m) =>
-                  `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
-              )
-              .join("")}
-            ${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}
-            ${statusBadge}
-          </div>
-        </div>
+        <div class="aluno-foto" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-graduate" style="font-size: 60px; color: white;"></i></div>
+        <div class="aluno-info"><h4>${aluno.nome} ${alertaBadge}</h4>
+        <p><i class="fas fa-calendar-alt"></i> ${aluno.idade} anos | ${aluno.sexo}</p>
+        <p><i class="fas fa-clock"></i> ${aluno.horario || "N/D"} | ${aluno.turma}</p>
+        <p><i class="fas fa-calendar-week"></i> Dias: ${diasTreinoResumo}</p>
+        <p><i class="fas fa-chart-line"></i> Média: ${mediaFormatada}</p>
+        <div class="aluno-badges">${aluno.modalidades
+          .slice(0, 2)
+          .map(
+            (m) =>
+              `<span class="badge badge-modalidade">${m.substring(0, 15)}</span>`,
+          )
+          .join(
+            "",
+          )}${aluno.advertencias > 0 ? `<span class="badge badge-advertencia"><i class="fas fa-exclamation-triangle"></i> ${aluno.advertencias}</span>` : ""}${statusBadge}</div></div>
       </div>`;
     })
     .join("");
@@ -1522,64 +1359,18 @@ function limparBusca() {
 function filtrarPorModalidade(modalidade) {
   currentModalidadeSelecionada = modalidade;
   let filtrados;
-
-  if (modalidade === "atletismo") {
+  if (modalidade === "atletismo")
     filtrados = alunos.filter((a) =>
       a.modalidades.some((m) => m.includes("atletismo")),
     );
-  } else {
-    filtrados = alunos.filter((a) => a.modalidades.includes(modalidade));
-  }
+  else filtrados = alunos.filter((a) => a.modalidades.includes(modalidade));
   renderizarAlunosModalidade(filtrados);
 }
 
 function gerarPDFTabela(alunosArray, nomeArquivo) {
   const dataAtual = new Date().toLocaleDateString("pt-BR");
   const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
-
-  let tabelaHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Lista de Alunos - Centro Educacional de Barra Nova</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; color: #2c3e50; font-size: 20px; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #2c3e50; color: white; padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 11px; }
-        td { padding: 8px; border: 1px solid #ddd; font-size: 10px; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-        .status-apto { color: #27ae60; font-weight: bold; }
-        .status-suspenso { color: #e74c3c; font-weight: bold; }
-        .inconsistencia { color: #f44336; font-weight: bold; }
-      </style>
-    </head>
-    <body>
-      <h1>Centro Educacional de Barra Nova</h1>
-      <div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>NOME</th>
-            <th>IDADE</th>
-            <th>SEXO</th>
-            <th>TURMA</th>
-            <th>DIAS/HORÁRIOS</th>
-            <th>MODALIDADES</th>
-            <th>ADVERTÊNCIAS</th>
-            <th>STATUS</th>
-            <th>PERÍODO SUSPENSÃO</th>
-            <th>MÉDIA</th>
-            <th>INCONSISTÊNCIAS</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
+  let tabelaHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lista de Alunos - Centro Educacional de Barra Nova</title><style>body{font-family:Arial,sans-serif;margin:20px;}h1{text-align:center;color:#2c3e50;font-size:20px;margin-bottom:5px;}.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#2c3e50;color:white;padding:10px;text-align:left;border:1px solid #ddd;font-size:11px;}td{padding:8px;border:1px solid #ddd;font-size:10px;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;text-align:center;font-size:9px;color:#999;}.status-apto{color:#27ae60;font-weight:bold;}.status-suspenso{color:#e74c3c;font-weight:bold;}.inconsistencia{color:#f44336;font-weight:bold;}</style></head><body><h1>Centro Educacional de Barra Nova</h1><div class="subtitle">Lista de Alunos - Gerado em ${dataAtual}</div><table><thead><tr><th>ID</th><th>NOME</th><th>IDADE</th><th>SEXO</th><th>TURMA</th><th>DIAS/HORÁRIOS</th><th>MODALIDADES</th><th>ADVERTÊNCIAS</th><th>STATUS</th><th>PERÍODO SUSPENSÃO</th><th>MÉDIA</th><th>INCONSISTÊNCIAS</th></tr></thead><tbody>`;
   alunosOrdenados.forEach((aluno) => {
     const isApto = aluno.status === "apto";
     const statusText = isApto ? "Apto" : "Suspenso";
@@ -1594,33 +1385,9 @@ function gerarPDFTabela(alunosArray, nomeArquivo) {
       ? "⚠️ ALERTA: Aluno muito velho para esta categoria!"
       : "-";
     const inconsistenciaClass = temInconsistencia ? "inconsistencia" : "";
-
-    tabelaHTML += `
-      <tr>
-        <td>${aluno.id}</td>
-        <td><strong>${aluno.nome}</strong></td>
-        <td>${aluno.idade}</td>
-        <td>${aluno.sexo}</td>
-        <td>${aluno.turma}</td>
-        <td>${diasTreinoTexto}</td>
-        <td>${aluno.modalidades.join(", ")}</td>
-        <td>${aluno.advertencias}</td>
-        <td class="${statusClass}">${statusText}</td>
-        <td>${periodoSuspensao}</td>
-        <td>${mediaFormatada}</td>
-        <td class="${inconsistenciaClass}">${inconsistenciaText}</td>
-      </tr>
-    `;
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${aluno.modalidades.join(", ")}</td><td>${aluno.advertencias}</td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${mediaFormatada}</td><td class="${inconsistenciaClass}">${inconsistenciaText}</td></tr>`;
   });
-
-  tabelaHTML += `
-        </tbody>
-      </table>
-      <div class="footer">Total de alunos: ${alunosOrdenados.length}</div>
-    </body>
-    </html>
-  `;
-
+  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosOrdenados.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -1634,55 +1401,13 @@ function gerarPDFPorModalidade() {
     alert("Selecione uma modalidade primeiro!");
     return;
   }
-
   const modalidade = currentModalidadeSelecionada;
   const alunosModalidade = alunos.filter((a) =>
     a.modalidades.includes(modalidade),
   );
   const alunosOrdenados = ordenarAlunosPorNome(alunosModalidade);
   const dataAtual = new Date().toLocaleDateString("pt-BR");
-
-  let tabelaHTML = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; color: #2c3e50; font-size: 20px; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #2c3e50; color: white; padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 11px; }
-        td { padding: 8px; border: 1px solid #ddd; font-size: 10px; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #999; }
-        .status-apto { color: #27ae60; font-weight: bold; }
-        .status-suspenso { color: #e74c3c; font-weight: bold; }
-        .inconsistencia { color: #f44336; font-weight: bold; }
-      </style>
-    </head>
-    <body>
-      <h1>Centro Educacional de Barra Nova</h1>
-      <div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>NOME</th>
-            <th>STATUS</th>
-            <th>PERÍODO SUSPENSÃO</th>
-            <th>IDADE</th>
-            <th>SEXO</th>
-            <th>TURMA</th>
-            <th>DIAS/HORÁRIOS</th>
-            <th>OUTRAS MODALIDADES</th>
-            <th>INCONSISTÊNCIA</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
+  let tabelaHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title><style>body{font-family:Arial,sans-serif;margin:20px;}h1{text-align:center;color:#2c3e50;font-size:20px;margin-bottom:5px;}.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#2c3e50;color:white;padding:10px;text-align:left;border:1px solid #ddd;font-size:11px;}td{padding:8px;border:1px solid #ddd;font-size:10px;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;text-align:center;font-size:9px;color:#999;}.status-apto{color:#27ae60;font-weight:bold;}.status-suspenso{color:#e74c3c;font-weight:bold;}.inconsistencia{color:#f44336;font-weight:bold;}</style></head><body><h1>Centro Educacional de Barra Nova</h1><div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div><table><thead><tr><th>ID</th><th>NOME</th><th>STATUS</th><th>PERÍODO SUSPENSÃO</th><th>IDADE</th><th>SEXO</th><th>TURMA</th><th>DIAS/HORÁRIOS</th><th>MODALIDADES</th><th>INCONSISTÊNCIA</th></tr></thead><tbody>`;
   alunosOrdenados.forEach((aluno) => {
     const outras =
       aluno.modalidades.filter((m) => m !== modalidade).join(", ") || "Nenhuma";
@@ -1700,31 +1425,9 @@ function gerarPDFPorModalidade() {
       ? "⚠️ ALERTA: Aluno muito velho para esta categoria!"
       : "-";
     const inconsistenciaClass = temInconsistencia ? "inconsistencia" : "";
-
-    tabelaHTML += `
-      <tr>
-        <td>${aluno.id}</td>
-        <td><strong>${aluno.nome}</strong></td>
-        <td class="${statusClass}">${statusText}</td>
-        <td>${periodoSuspensao}</td>
-        <td>${aluno.idade}</td>
-        <td>${aluno.sexo}</td>
-        <td>${aluno.turma}</td>
-        <td>${diasTreinoTexto}</td>
-        <td>${outras}</td>
-        <td class="${inconsistenciaClass}">${inconsistenciaText}</td>
-      </tr>
-    `;
+    tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td><td class="${inconsistenciaClass}">${inconsistenciaText}</td></tr>`;
   });
-
-  tabelaHTML += `
-        </tbody>
-      </table>
-      <div class="footer">Total de alunos: ${alunosOrdenados.length}</div>
-    </body>
-    </html>
-  `;
-
+  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosOrdenados.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
