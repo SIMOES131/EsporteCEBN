@@ -1968,12 +1968,12 @@ const ALUNOS_CADASTRADOS = [
       { dia: "Quarta", horario: "16h15-17h00" },
     ],
     modalidades: [
-      "futsal sub-11 fem",
-      "handebol sub-11 fem",
-      "vôlei sub-11 fem",
-      "basquete sub-11 fem",
-      "baleado sub-11 fem",
-      "atletismo sub-11 fem",
+      "futsal sub-13 fem",
+      "handebol sub-13 fem",
+      "vôlei sub-13 fem",
+      "basquete sub-13 fem",
+      "baleado sub-13 fem",
+      "atletismo sub-13 fem",
     ],
     advertencias: 0,
     suspensoes: 0,
@@ -4451,3 +4451,27 @@ function buscarAlunosSemCpf(alunos) {
 
 // EXECUTAR A FUNÇÃO
 const resultado = buscarAlunosSemCpf(ALUNOS_CADASTRADOS);
+
+// FUNÇÃO PARA CONTAR A QUANTIDADE DE ALUNOS POR MODALIDADE
+function QuantidadeDeAlunosPorCadaModalidade(alunos) {
+  const modalidadeCounts = {};
+
+  alunos.forEach((aluno) => {
+    aluno.modalidades.forEach((modalidade) => {
+      modalidadeCounts[modalidade] = (modalidadeCounts[modalidade] || 0) + 1;
+    });
+  });
+
+  return modalidadeCounts;
+}
+
+const resultadoModalidades =
+  QuantidadeDeAlunosPorCadaModalidade(ALUNOS_CADASTRADOS);
+
+console.log("=".repeat(60));
+console.log("📊 QUANTIDADE DE ALUNOS POR MODALIDADE:");
+console.log("=".repeat(60));
+
+for (const [modalidade, quantidade] of Object.entries(resultadoModalidades)) {
+  console.log(`${modalidade}: ${quantidade} alunos`);
+}
