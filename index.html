@@ -161,7 +161,6 @@
 
         <!-- Dashboard View -->
         <div id="dashboardView" class="view active">
-          <!-- Alertas de Inconsistências -->
           <div id="alertaInconsistencias" style="display: none"></div>
 
           <div class="stats-grid">
@@ -276,14 +275,21 @@
                 <label><i class="fas fa-clock"></i> Horário</label>
                 <select id="filtroHorario">
                   <option value="">Todos</option>
+                  <option value="07h00-07h45">07h00 - 07h45</option>
                   <option value="07h15-08h15">07h15 - 08h15</option>
+                  <option value="07h45-08h30">07h45 - 08h30</option>
                   <option value="08h15-09h15">08h15 - 09h15</option>
-                  <option value="09h15-10h15">09h15 - 10h15</option>
-                  <option value="10h15-11h15">10h15 - 11h15</option>
+                  <option value="08h30-09h15">08h30 - 09h15</option>
+                  <option value="09h30-10h15">09h30 - 10h15</option>
+                  <option value="09h30-10h30">09h30 - 10h30</option>
+                  <option value="13h00-13h45">13h00 - 13h45</option>
                   <option value="13h15-14h15">13h15 - 14h15</option>
+                  <option value="13h30-14h30">13h30 - 14h30</option>
+                  <option value="13h45-14h45">13h45 - 14h45</option>
                   <option value="14h15-15h15">14h15 - 15h15</option>
-                  <option value="15h15-16h15">15h15 - 16h15</option>
-                  <option value="16h15-17h15">16h15 - 17h15</option>
+                  <option value="14h30-15h15">14h30 - 15h15</option>
+                  <option value="15h30-16h30">15h30 - 16h30</option>
+                  <option value="15h30-16h45">15h30 - 16h45</option>
                 </select>
               </div>
               <div class="filtro-group">
@@ -327,6 +333,20 @@
               </button>
               <button id="gerarPDFBtn" class="btn-pdf">
                 <i class="fas fa-file-pdf"></i> Gerar PDF
+              </button>
+              <button
+                id="gerarListaFrequenciaBtn"
+                class="btn-primary"
+                style="background: #3498db"
+              >
+                <i class="fas fa-check-square"></i> Frequência (Dia)
+              </button>
+              <button
+                id="gerarFrequenciaMensalBtn"
+                class="btn-primary"
+                style="background: #2ecc71"
+              >
+                <i class="fas fa-calendar-alt"></i> Frequência Mensal
               </button>
             </div>
           </div>
@@ -382,14 +402,21 @@
                 <label><i class="fas fa-clock"></i> Horário</label>
                 <select id="buscaHorario">
                   <option value="">Todos</option>
+                  <option value="07h00-07h45">07h00 - 07h45</option>
                   <option value="07h15-08h15">07h15 - 08h15</option>
+                  <option value="07h45-08h30">07h45 - 08h30</option>
                   <option value="08h15-09h15">08h15 - 09h15</option>
-                  <option value="09h15-10h15">09h15 - 10h15</option>
-                  <option value="10h15-11h15">10h15 - 11h15</option>
+                  <option value="08h30-09h15">08h30 - 09h15</option>
+                  <option value="09h30-10h15">09h30 - 10h15</option>
+                  <option value="09h30-10h30">09h30 - 10h30</option>
+                  <option value="13h00-13h45">13h00 - 13h45</option>
                   <option value="13h15-14h15">13h15 - 14h15</option>
+                  <option value="13h30-14h30">13h30 - 14h30</option>
+                  <option value="13h45-14h45">13h45 - 14h45</option>
                   <option value="14h15-15h15">14h15 - 15h15</option>
-                  <option value="15h15-16h15">15h15 - 16h15</option>
-                  <option value="16h15-17h15">16h15 - 17h15</option>
+                  <option value="14h30-15h15">14h30 - 15h15</option>
+                  <option value="15h30-16h30">15h30 - 16h30</option>
+                  <option value="15h30-16h45">15h30 - 16h45</option>
                 </select>
               </div>
               <div class="filtro-group">
@@ -480,13 +507,32 @@
           <div class="modalidades-buttons" id="modalidadesButtons"></div>
           <div
             class="filtros-actions"
-            style="margin-bottom: 20px; justify-content: space-between"
+            style="
+              margin-bottom: 20px;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 10px;
+            "
           >
             <button id="limparFiltroModalidadeBtn" class="btn-secondary">
               <i class="fas fa-eraser"></i> Limpar Filtro
             </button>
             <button id="gerarPDFModalidadeBtn" class="btn-pdf">
               <i class="fas fa-file-pdf"></i> Gerar PDF desta Modalidade
+            </button>
+            <button
+              id="gerarFrequenciaModalidadeBtn"
+              class="btn-primary"
+              style="background: #3498db"
+            >
+              <i class="fas fa-check-square"></i> Frequência (Dia)
+            </button>
+            <button
+              id="gerarFrequenciaMensalModalidadeBtn"
+              class="btn-primary"
+              style="background: #2ecc71"
+            >
+              <i class="fas fa-calendar-alt"></i> Frequência Mensal
             </button>
           </div>
           <div id="modalidadeResultados" class="alunos-grid"></div>
