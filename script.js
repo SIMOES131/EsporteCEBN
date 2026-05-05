@@ -1566,7 +1566,7 @@ function gerarFrequenciaMensal() {
     <div class="header"><h1>📍 CENTRO EDUCACIONAL DE BARRA NOVA</h1><div class="subtitle">LISTA DE FREQUÊNCIA MENSAL - TREINAMENTO ESPORTIVO</div><div class="subtitle">${mesFormatado.toUpperCase()} / ${anoSelecionado}</div></div>
     <div class="info-session"><strong>📅 DATA DE GERAÇÃO:</strong> ${dataFormatada} às ${horaAtual} &nbsp;&nbsp;|&nbsp;&nbsp;<strong>👨‍🏫 PROFESSOR RESPONSÁVEL:</strong> _________________________ &nbsp;&nbsp;|&nbsp;&nbsp;<strong>🏫 TURNO:</strong> ${horarioFiltro?.includes("13") || horarioFiltro?.includes("14") || horarioFiltro?.includes("15") || horarioFiltro?.includes("16") ? "VESPERTINO" : "MATUTINO"}</div>
     <div class="info-session" style="background:#e8f4fd;"><strong>🎯 INFORMAÇÕES:${tituloFiltro}</strong><span style="margin-left:15px;">👥 Total de Alunos: ${alunosOrdenados.length}</span><span style="margin-left:15px;">📆 Dias no Mês: ${diasNoMes}</span></div>
-    <div class="legenda"><span><strong>✅ INSTRUÇÕES DE PREENCHIMENTO:</strong></span><span>✓ Marcar <strong>✅</strong> ou <strong>P</strong> para PRESENTE</span><span>✗ Marcar <strong>❌</strong> ou <strong>F</strong> para AUSENTE</span><span>⚕️ Marcar <strong>A</strong> para ATESTADO</span><span>🔴 Alunos com status "SUSPENSO" NÃO podem treinar</span></div>
+    <div class="legenda"><span><strong>✅ INSTRUÇÕES DE PREENCHIMENTO:</strong></span><span>✓ Marcar <strong>✅</strong> ou <strong>P</strong> para PRESENTE</span><span> Marcar <strong>❌</strong> ou <strong>F</strong> para AUSENTE</span><span>⚕️ Marcar <strong>A</strong> para ATESTADO</span><span>🔴 Alunos com status "SUSPENSO" NÃO podem treinar</span></div>
     <div class="table-container"><table><thead><tr><th class="col-nome">NOME DO ALUNO</th><th class="col-turma">TURMA</th><th class="col-status">STATUS</th>`;
 
   for (const dia of diasDoMes) {
@@ -1584,13 +1584,13 @@ function gerarFrequenciaMensal() {
     tabelaHTML += `<tr><td class="aluno-nome" style="text-align:left;"><strong>${aluno.nome}</strong><br><span style="font-size:7px;color:#888;">${aluno.turma} | ${aluno.idade} anos</span></td><td style="text-align:center;">${aluno.turma}</td><td style="text-align:center;"><span class="badge-status ${statusClass}">${statusText}</span></td>`;
 
     for (let i = 0; i < diasNoMes; i++) {
-      tabelaHTML += `<td style="text-align:center; ${styleSuspenso}"><span class="checkbox-placeholder">☐</span></td>`;
+      tabelaHTML += `<td style="text-align:center; ${styleSuspenso}"><span class="checkbox-placeholder"></span></td>`;
     }
     tabelaHTML += `</tr>`;
   }
 
   tabelaHTML += `</tbody></table></div>
-    <div class="obs-box"><p><strong>📋 OBSERVAÇÕES E INSTRUÇÕES:</strong></p><p>1. Marcar ✅ (PRESENTE) ou ❌ (AUSENTE) em cada dia de treino correspondente à turma.</p><p>2. Alunos com status "SUSPENSO" não devem ter presença marcada durante o período de suspensão.</p><p>3. Em caso de atestado médico, marcar "A" na data correspondente e anexar documento.</p><p>4. Ao final do mês, calcular o percentual de frequência de cada aluno (mínimo 75% para continuidade).</p><p>5. Esta lista deve ser entregue à coordenação no início do mês seguinte.</p></div>
+    <div class="obs-box"><p><strong>📋 OBSERVAÇÕES E INSTRUÇÕES:</strong></p><p>1. Marcar P (PRESENTE) ou F (FALTA) em cada dia de treino correspondente à turma.</p><p>2. Alunos com status "SUSPENSO" não devem ter presença marcada durante o período de suspensão.</p><p>3. Em caso de atestado médico, marcar "A" na data correspondente.</p><p></p><p></div>
     <div class="assinatura"><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura do Professor</p><p style="font-size:8px;margin-top:5px;">Data: ___/___/_____</p></div><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura da Coordenação</p><p style="font-size:8px;margin-top:5px;">Data: ___/___/_____</p></div></div>
     <div class="footer"><p>Centro Educacional de Barra Nova - Esporte na Escola | Gerado automaticamente em ${dataFormatada}</p><p>Esta lista cobre todo o mês de ${mesFormatado}/${anoSelecionado} - Total de ${diasNoMes} dias</p></div>
   </body></html>`;
