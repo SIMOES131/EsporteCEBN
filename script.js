@@ -1394,14 +1394,8 @@ function gerarListaFrequencia() {
       aluno.diasTreino && aluno.diasTreino.length > 0
         ? aluno.diasTreino.map((d) => `${d.dia} ${d.horario}`).join(" | ")
         : `${aluno.diaTreino || "N/D"} ${aluno.horario || ""}`;
-    tabelaHTML += `<tr><td style="text-align:center;">${index + 1}</td><td><strong>${aluno.nome}</strong><br><span style="font-size:9px;color:#888;">${diasTreinoTexto.substring(0, 35)}${diasTreinoTexto.length > 35 ? "..." : ""}</span></td><td>${aluno.turma}</td><td style="text-align:center;">${aluno.idade}</td><td style="text-align:center;"><span class="badge-status ${statusClass}">${statusText}</span></td><td class="presente-col"><span class="checkbox-placeholder">☐</span></td><td class="ausente-col"><span class="checkbox-placeholder">☐</span></td></tr>`;
+    tabelaHTML += `<tr><td style="text-align:center;">${index + 1}</td><td><strong>${aluno.nome}</strong><br><span style="font-size:9px;color:#888;">${diasTreinoTexto.substring(0, 35)}${diasTreinoTexto.length > 35 ? "..." : ""}</span></td><td>${aluno.turma}</td><td style="text-align:center;">${aluno.idade}</td><td style="text-align:center;"><span class="badge-status ${statusClass}">${statusText}</span></td><td class="presente-col"><span class="checkbox-placeholder"></span></td><td class="ausente-col"><span class="checkbox-placeholder"></span></td></tr>`;
   });
-
-  tabelaHTML += `</tbody></table>
-    <div class="obs-box"><p><strong>📋 OBSERVAÇÕES E INSTRUÇÕES:</strong></p><p>1. Marcar ✅ no campo "PRESENTE" para alunos que compareceram ao treino.</p><p>2. Marcar ❌ no campo "AUSENTE" para alunos que não compareceram.</p><p>3. Alunos com status "SUSPENSO" NÃO podem treinar durante o período de suspensão.</p><p>4. Em caso de atestado médico, anexar à lista e registrar na coordenação.</p><p>5. Esta lista deve ser entregue à coordenação após o treino.</p></div>
-    <div class="assinatura"><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura do Professor</p></div><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura da Coordenação</p></div></div>
-    <div class="footer"><p>Centro Educacional de Barra Nova - Esporte na Escola | Gerado automaticamente em ${dataFormatada} às ${horaAtual}</p><p>Este documento é válido como registro de frequência para o treino do dia.</p></div>
-  </body></html>`;
 
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
@@ -1413,6 +1407,7 @@ function gerarListaFrequencia() {
 }
 
 // Função para gerar lista de frequência MENSAL
+// Função para gerar lista de frequência MENSAL (sem quebra de página)
 function gerarFrequenciaMensal() {
   let alunosParaFrequencia = [];
 
@@ -1531,69 +1526,243 @@ function gerarFrequenciaMensal() {
   if (turmaFiltro) tituloFiltro += ` - Turma: ${turmaFiltro}`;
   if (horarioFiltro) tituloFiltro += ` - Horário: ${horarioFiltro}`;
 
+  // Calcular largura da tabela baseada no número de dias
   const colWidth = Math.max(
-    40,
-    Math.min(60, Math.floor(800 / (diasNoMes + 4))),
+    35,
+    Math.min(50, Math.floor(750 / (diasNoMes + 4))),
   );
   const tableStyle = `min-width: ${(diasNoMes + 4) * colWidth}px;`;
 
-  let tabelaHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Frequência Mensal - ${mesFormatado}/${anoSelecionado} - Centro Educacional de Barra Nova</title><style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    @media print{body{margin:0;padding:10px;}.page-break{page-break-before:always;}table{page-break-inside:avoid;}tr{page-break-inside:avoid;}}
-    body{font-family:'Courier New',Courier,monospace;margin:10px;font-size:10px;}
-    .header{text-align:center;margin-bottom:15px;border-bottom:2px solid #333;padding-bottom:10px;}
-    h1{color:#2c3e50;font-size:18px;margin-bottom:3px;text-transform:uppercase;}
-    .subtitle{color:#555;font-size:11px;margin-bottom:5px;}
-    .info-session{background:#f5f5f5;padding:8px;margin-bottom:15px;border-left:4px solid #2c3e50;font-size:10px;}
-    .table-container{overflow-x:auto;margin-top:15px;}
-    table{border-collapse:collapse;font-size:9px;${tableStyle}}
-    th{background:#2c3e50;color:white;padding:6px 3px;text-align:center;border:1px solid #ddd;font-weight:bold;font-size:8px;}
-    td{padding:4px 2px;border:1px solid #ddd;vertical-align:middle;text-align:center;}
-    .aluno-nome{text-align:left;font-weight:bold;background:#f9f9f9;position:sticky;left:0;z-index:1;}
-    .checkbox-placeholder{display:inline-block;width:16px;height:16px;border:1.5px solid #333;border-radius:3px;text-align:center;line-height:13px;font-size:11px;font-weight:bold;}
-    .footer{margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:9px;color:#666;}
-    .assinatura{margin-top:20px;display:flex;justify-content:space-between;}
-    .assinatura-item{text-align:center;width:180px;}
-    .linha-assinatura{border-top:1px solid #333;margin-top:20px;padding-top:5px;}
-    .badge-status{display:inline-block;padding:2px 6px;border-radius:8px;font-size:8px;font-weight:bold;}
-    .badge-suspenso{background:#e74c3c;color:white;}
-    .badge-apto{background:#27ae60;color:white;}
-    .legenda{margin:10px 0;padding:8px;background:#f0f0f0;font-size:9px;display:flex;gap:15px;flex-wrap:wrap;}
-    .col-nome{min-width:180px;}.col-turma{min-width:60px;}.col-status{min-width:60px;}
-    tr:nth-child(even){background:#fafafa;}
-    .obs-box{margin-top:15px;padding:8px;border:1px solid #ccc;background:#fafafa;}
-  </style></head><body>
-    <div class="header"><h1>📍 CENTRO EDUCACIONAL DE BARRA NOVA</h1><div class="subtitle">LISTA DE FREQUÊNCIA MENSAL - TREINAMENTO ESPORTIVO</div><div class="subtitle">${mesFormatado.toUpperCase()} / ${anoSelecionado}</div></div>
-    <div class="info-session"><strong>📅 DATA DE GERAÇÃO:</strong> ${dataFormatada} às ${horaAtual} &nbsp;&nbsp;|&nbsp;&nbsp;<strong>👨‍🏫 PROFESSOR RESPONSÁVEL:</strong> _________________________ &nbsp;&nbsp;|&nbsp;&nbsp;<strong>🏫 TURNO:</strong> ${horarioFiltro?.includes("13") || horarioFiltro?.includes("14") || horarioFiltro?.includes("15") || horarioFiltro?.includes("16") ? "VESPERTINO" : "MATUTINO"}</div>
-    <div class="info-session" style="background:#e8f4fd;"><strong>🎯 INFORMAÇÕES:${tituloFiltro}</strong><span style="margin-left:15px;">👥 Total de Alunos: ${alunosOrdenados.length}</span><span style="margin-left:15px;">📆 Dias no Mês: ${diasNoMes}</span></div>
-    <div class="legenda"><span><strong>✅ INSTRUÇÕES DE PREENCHIMENTO:</strong></span><span>✓ Marcar <strong>✅</strong> ou <strong>P</strong> para PRESENTE</span><span> Marcar <strong>❌</strong> ou <strong>F</strong> para AUSENTE</span><span>⚕️ Marcar <strong>A</strong> para ATESTADO</span><span>🔴 Alunos com status "SUSPENSO" NÃO podem treinar</span></div>
-    <div class="table-container"><table><thead><tr><th class="col-nome">NOME DO ALUNO</th><th class="col-turma">TURMA</th><th class="col-status">STATUS</th>`;
+  let tabelaHTML = `<!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Frequência Mensal - ${mesFormatado}/${anoSelecionado} - Centro Educacional de Barra Nova</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      @media print {
+        body { margin: 0; padding: 8px; }
+        .page-break { page-break-before: avoid; }
+        table { page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        thead { display: table-header-group; }
+      }
+      body {
+        font-family: 'Courier New', Courier, monospace;
+        margin: 8px;
+        font-size: 9px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 8px;
+      }
+      h1 {
+        color: #2c3e50;
+        font-size: 16px;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+      }
+      .subtitle {
+        color: #555;
+        font-size: 10px;
+        margin-bottom: 3px;
+      }
+      .info-session {
+        background: #f5f5f5;
+        padding: 6px;
+        margin-bottom: 10px;
+        border-left: 4px solid #2c3e50;
+        font-size: 9px;
+      }
+      .table-container {
+        overflow-x: auto;
+        margin-top: 10px;
+      }
+      table {
+        border-collapse: collapse;
+        font-size: 8px;
+        ${tableStyle}
+        width: 100%;
+      }
+      th {
+        background: #2c3e50;
+        color: white;
+        padding: 5px 2px;
+        text-align: center;
+        border: 1px solid #ddd;
+        font-weight: bold;
+        font-size: 7px;
+      }
+      td {
+        padding: 3px 1px;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .aluno-nome {
+        text-align: left;
+        font-weight: bold;
+        background: #f9f9f9;
+      }
+      .checkbox-placeholder {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid #333;
+        border-radius: 2px;
+        text-align: center;
+        line-height: 11px;
+        font-size: 9px;
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 15px;
+        padding-top: 8px;
+        border-top: 1px solid #ccc;
+        font-size: 8px;
+        color: #666;
+        text-align: center;
+      }
+      .assinatura {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .assinatura-item {
+        text-align: center;
+        width: 160px;
+      }
+      .linha-assinatura {
+        border-top: 1px solid #333;
+        margin-top: 15px;
+        padding-top: 3px;
+      }
+      .badge-status {
+        display: inline-block;
+        padding: 1px 5px;
+        border-radius: 6px;
+        font-size: 7px;
+        font-weight: bold;
+      }
+      .badge-suspenso {
+        background: #e74c3c;
+        color: white;
+      }
+      .badge-apto {
+        background: #27ae60;
+        color: white;
+      }
+      .legenda {
+        margin: 8px 0;
+        padding: 5px;
+        background: #f0f0f0;
+        font-size: 8px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .col-nome { min-width: 160px; }
+      .col-turma { min-width: 50px; }
+      .col-status { min-width: 55px; }
+      tr:nth-child(even) { background: #fafafa; }
+      .obs-box {
+        margin-top: 10px;
+        padding: 6px;
+        border: 1px solid #ccc;
+        background: #fafafa;
+        font-size: 8px;
+      }
+      .obs-box p { margin: 3px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>📍 CENTRO EDUCACIONAL DE BARRA NOVA</h1>
+      <div class="subtitle">LISTA DE FREQUÊNCIA MENSAL - TREINAMENTO ESPORTIVO</div>
+      <div class="subtitle">${mesFormatado.toUpperCase()} / ${anoSelecionado}</div>
+    </div>
+    
+    <div class="info-session">
+      <strong>📅 DATA DE GERAÇÃO:</strong> ${dataFormatada} às ${horaAtual} &nbsp;&nbsp;|&nbsp;&nbsp;
+      <strong>👨‍🏫 PROFESSOR RESPONSÁVEL:</strong> _________________________ &nbsp;&nbsp;|&nbsp;&nbsp;
+      <strong>🏫 TURNO:</strong> ${horarioFiltro?.includes("13") || horarioFiltro?.includes("14") || horarioFiltro?.includes("15") || horarioFiltro?.includes("16") ? "VESPERTINO" : "MATUTINO"}
+    </div>
+    
+    <div class="info-session" style="background: #e8f4fd;">
+      <strong>🎯 INFORMAÇÕES:${tituloFiltro}</strong>
+      <span style="margin-left: 15px;">👥 Total de Alunos: ${alunosOrdenados.length}</span>
+      <span style="margin-left: 15px;">📆 Dias no Mês: ${diasNoMes}</span>
+    </div>
+    
+    <div class="legenda">
+      <span><strong>✅ INSTRUÇÕES:</strong></span>
+      <span>✓ Marcar <strong>✅</strong> ou <strong>P</strong> = PRESENTE</span>
+      <span>✗ Marcar <strong>❌</strong> ou <strong>F</strong> = AUSENTE</span>
+      <span>⚕️ Marcar <strong>A</strong> = ATESTADO</span>
+      <span>🔴 Alunos com status "SUSPENSO" NÃO podem treinar</span>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-nome">NOME DO ALUNO</th>
+            <th class="col-turma">TURMA</th>
+            <th class="col-status">STATUS</th>`;
 
   for (const dia of diasDoMes) {
-    tabelaHTML += `<th style="min-width:30px;">${dia.dia}<br><span style="font-weight:normal;">${dia.diaSemana}</span></th>`;
+    tabelaHTML += `<th style="min-width: 28px;">${dia.dia}<br><span style="font-weight: normal; font-size: 6px;">${dia.diaSemana}</span></th>`;
   }
 
-  tabelaHTML += `</tr></thead><tbody>`;
+  tabelaHTML += `
+           </tr>
+        </thead>
+        <tbody>`;
 
   for (const aluno of alunosOrdenados) {
     const isApto = aluno.status === "apto";
     const statusText = isApto ? "APTO" : "SUSPENSO";
     const statusClass = isApto ? "badge-apto" : "badge-suspenso";
-    const styleSuspenso = !isApto ? "opacity:0.5; background:#ffebee;" : "";
+    const styleSuspenso = !isApto ? "opacity: 0.6; background: #ffebee;" : "";
 
-    tabelaHTML += `<tr><td class="aluno-nome" style="text-align:left;"><strong>${aluno.nome}</strong><br><span style="font-size:7px;color:#888;">${aluno.turma} | ${aluno.idade} anos</span></td><td style="text-align:center;">${aluno.turma}</td><td style="text-align:center;"><span class="badge-status ${statusClass}">${statusText}</span></td>`;
+    tabelaHTML += `
+          <tr>
+            <td class="aluno-nome" style="text-align: left;"><strong>${aluno.nome}</strong><br><span style="font-size: 6px; color: #888;">${aluno.turma} | ${aluno.idade} anos</span></td>
+            <td style="text-align: center;">${aluno.turma}</td>
+            <td style="text-align: center;"><span class="badge-status ${statusClass}">${statusText}</span></td>`;
 
     for (let i = 0; i < diasNoMes; i++) {
-      tabelaHTML += `<td style="text-align:center; ${styleSuspenso}"><span class="checkbox-placeholder"></span></td>`;
+      tabelaHTML += `<td style="text-align: center; ${styleSuspenso}"><span class="checkbox-placeholder"></span></td>`;
     }
-    tabelaHTML += `</tr>`;
+    tabelaHTML += `
+          </tr>`;
   }
 
-  tabelaHTML += `</tbody></table></div>
-    <div class="obs-box"><p><strong>📋 OBSERVAÇÕES E INSTRUÇÕES:</strong></p><p>1. Marcar P (PRESENTE) ou F (FALTA) em cada dia de treino correspondente à turma.</p><p>2. Alunos com status "SUSPENSO" não devem ter presença marcada durante o período de suspensão.</p><p>3. Em caso de atestado médico, marcar "A" na data correspondente.</p><p></p><p></div>
-    <div class="assinatura"><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura do Professor</p><p style="font-size:8px;margin-top:5px;">Data: ___/___/_____</p></div><div class="assinatura-item"><div class="linha-assinatura"></div><p>Assinatura da Coordenação</p><p style="font-size:8px;margin-top:5px;">Data: ___/___/_____</p></div></div>
-    <div class="footer"><p>Centro Educacional de Barra Nova - Esporte na Escola | Gerado automaticamente em ${dataFormatada}</p><p>Esta lista cobre todo o mês de ${mesFormatado}/${anoSelecionado} - Total de ${diasNoMes} dias</p></div>
-  </body></html>`;
+  tabelaHTML += `
+        </tbody>
+       </div>
+    
+    <div class="assinatura">
+      <div class="assinatura-item">
+        <div class="linha-assinatura"></div>
+        <p>Assinatura do Professor</p>
+        <p style="font-size: 7px; margin-top: 3px;">Data: ___/___/_____</p>
+      </div>
+      <div class="assinatura-item">
+        <div class="linha-assinatura"></div>
+        <p>Assinatura da Coordenação</p>
+        <p style="font-size: 7px; margin-top: 3px;">Data: ___/___/_____</p>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Centro Educacional de Barra Nova - Esporte na Escola | Gerado automaticamente em ${dataFormatada}</p>
+      <p>Esta lista cobre todo o mês de ${mesFormatado}/${anoSelecionado} - Total de ${diasNoMes} dias</p>
+    </div>
+  </body>
+  </html>`;
 
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
