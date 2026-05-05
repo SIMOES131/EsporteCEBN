@@ -823,7 +823,6 @@ function preencherModalidades() {
     "9º ANO A",
     "9º ANO B",
     "9º ANO C",
-    "9º ANO D",
     "Módulo I",
     "Módulo II",
     "Módulo III",
