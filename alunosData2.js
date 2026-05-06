@@ -5599,7 +5599,7 @@ const ALUNOS_CADASTRADOS = [
   },
   {
     id: 553,
-    nome: "MAL-COMPORTADO",
+    nome: "ALUNO ",
     cpf: "553",
     dataNascimento: "2012-07-19",
     sexo: "Masculino",
@@ -5619,7 +5619,7 @@ const ALUNOS_CADASTRADOS = [
   },
   {
     id: 554,
-    nome: " BEM-COMPORTADO",
+    nome: " ALUNA",
     cpf: "554",
     dataNascimento: "2012-07-19",
     sexo: "Masculino",
