@@ -1737,7 +1737,15 @@ function gerarFrequenciaMensal() {
           </tr>`;
   }
 
-  tabelaHTML += `
+  const blob = new Blob([tabelaHTML], { type: "text/html" });
+  const link = document.createElement("a");
+  const nomeArquivo = `frequencia_mensal_${mesFormatado.toLowerCase()}_${anoSelecionado}_${horarioFiltro || currentModalidadeSelecionada || "geral"}`;
+  link.href = URL.createObjectURL(blob);
+  link.download = `${nomeArquivo}.html`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+tabelaHTML += `
         </tbody>
        </div>
     
@@ -1760,16 +1768,6 @@ function gerarFrequenciaMensal() {
     </div>
   </body>
   </html>`;
-
-  const blob = new Blob([tabelaHTML], { type: "text/html" });
-  const link = document.createElement("a");
-  const nomeArquivo = `frequencia_mensal_${mesFormatado.toLowerCase()}_${anoSelecionado}_${horarioFiltro || currentModalidadeSelecionada || "geral"}`;
-  link.href = URL.createObjectURL(blob);
-  link.download = `${nomeArquivo}.html`;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
 function gerarPDFTabela(alunosArray, nomeArquivo) {
   const dataAtual = new Date().toLocaleDateString("pt-BR");
   const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
