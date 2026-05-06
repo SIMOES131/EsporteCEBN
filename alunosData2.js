@@ -6069,7 +6069,24 @@ const ALUNOS_CADASTRADOS = [
   },
 
   //Alunos texte
-
+  {
+    id: 553,
+    nome: "JHENIFY FERNANDES SILVA",
+    cpf: "09732797533",
+    dataNascimento: "2013-10-01",
+    sexo: "Feminino",
+    turma: "7º ANO C",
+    turno: "VESPERTINO",
+    localidade: "BARRA NOVA",
+    diasTreino: [],
+    modalidades: [],
+    advertencias: 0,
+    suspensoes: 0,
+    diasSuspensao: 0,
+    dataInicioSuspensao: null,
+    mediaGeral: null,
+    foto: "",
+  },
   {
     id: 553,
     nome: "ALUNA TESTE",
