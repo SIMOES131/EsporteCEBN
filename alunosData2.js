@@ -5921,7 +5921,7 @@ const ALUNOS_CADASTRADOS = [
     mediaGeral: null,
     foto: "",
   },
-  {
+  /*{
     id: 554,
     nome: "ALUNA TESTE",
     cpf: "554",
@@ -5956,7 +5956,7 @@ const ALUNOS_CADASTRADOS = [
     dataInicioSuspensao: "2026-05-07",
     mediaGeral: null,
     foto: "",
-  },
+  },*/
 ];
 
 // Nota: Os alunos que não foram listados nos documentos de horário
