@@ -5921,16 +5921,19 @@ const ALUNOS_CADASTRADOS = [
     mediaGeral: null,
     foto: "",
   },
-  /*{
+  {
     id: 554,
-    nome: "ALUNA TESTE",
-    cpf: "554",
-    dataNascimento: "2003-10-26",
+    nome: "RAIANE OLIVEIRA SANTOS",
+    cpf: "07645498552",
+    dataNascimento: "2012-09-26",
     sexo: "Feminino",
-    turma: "9º ANO D",
-    turno: "VESPERTINO",
-    localidade: "ZONA RURAL",
-    diasTreino: [{ dia: "Quarta", horario: "14h30-15h15" }],
+    turma: "8º ANO B",
+    turno: "MATUTINO",
+    localidade: "BARRA NOVA",
+    diasTreino: [
+      { dia: "Terça", horario: "14h15-15h15" },
+      { dia: "Quinta", horario: "14h30-15h15" },
+    ],
     modalidades: [],
     advertencias: 0,
     suspensoes: 0,
@@ -5939,24 +5942,6 @@ const ALUNOS_CADASTRADOS = [
     mediaGeral: null,
     foto: "",
   },
-  {
-    id: 555,
-    nome: "ALUNO TESTE",
-    cpf: "555",
-    dataNascimento: "2003-10-26",
-    sexo: "Masculino",
-    turma: "9º ANO D",
-    turno: "VESPERTINO",
-    localidade: "ZONA RURAL",
-    diasTreino: [{ dia: "Quarta", horario: "14h30-15h15" }],
-    modalidades: [],
-    advertencias: 5,
-    suspensoes: 3,
-    diasSuspensao: 15,
-    dataInicioSuspensao: "2026-05-07",
-    mediaGeral: null,
-    foto: "",
-  },*/
 ];
 
 // Nota: Os alunos que não foram listados nos documentos de horário
