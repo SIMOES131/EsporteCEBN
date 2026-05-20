@@ -1174,9 +1174,9 @@ const ALUNOS_CADASTRADOS = [
     diasTreino: [{ dia: "Quarta", horario: "08h30-09h15" }],
     modalidades: [],
     advertencias: 0,
-    suspensoes: 0,
-    diasSuspensao: 0,
-    dataInicioSuspensao: null,
+    suspensoes: 1,
+    diasSuspensao: 30,
+    dataInicioSuspensao: "2026-05-21",
     mediaGeral: null,
     foto: "",
   },
@@ -4095,9 +4095,9 @@ const ALUNOS_CADASTRADOS = [
     ],
     modalidades: [],
     advertencias: 0,
-    suspensoes: 0,
-    diasSuspensao: 0,
-    dataInicioSuspensao: null,
+    suspensoes: 1,
+    diasSuspensao: 30,
+    dataInicioSuspensao: "2026-05-21",
     mediaGeral: null,
     foto: "",
   },
@@ -4221,9 +4221,9 @@ const ALUNOS_CADASTRADOS = [
     ],
     modalidades: [],
     advertencias: 0,
-    suspensoes: 1,
-    diasSuspensao: 15,
-    dataInicioSuspensao: "2026-04-27",
+    suspensoes: 2,
+    diasSuspensao: 30,
+    dataInicioSuspensao: "2026-05-21",
     mediaGeral: null,
     foto: "",
   },
@@ -5944,6 +5944,24 @@ const ALUNOS_CADASTRADOS = [
   },
 ];
 
-// Nota: Os alunos que não foram listados nos documentos de horário
-// (como os de turmas MODULO I AO III, MODULO IV, MODULO V, etc)
-// permanecem com diasTreino: [] - esses são os adultos/outros alunos
+console.log("Total de alunos cadastrados:", ALUNOS_CADASTRADOS.length);
+
+const alunosSuspensos = ALUNOS_CADASTRADOS.filter(
+  (aluno) => aluno.suspensoes > 0,
+);
+console.log("Alunos com suspensões:", alunosSuspensos.length);
+
+const alunosMatutino = ALUNOS_CADASTRADOS.filter(
+  (aluno) => aluno.turno === "MATUTINO",
+);
+console.log("Alunos no turno matutino:", alunosMatutino.length);
+
+const alunosVespertino = ALUNOS_CADASTRADOS.filter(
+  (alunos) => alunos.turno === "VESPERTINO",
+);
+console.log("Alunos no turno vespertino:", alunosVespertino.length);
+
+const idEmOrdemCresceste = ALUNOS_CADASTRADOS.map((aluno) => aluno.id).sort(
+  (a, b) => a - b,
+);
+console.log("IDs dos alunos em ordem crescente:", idEmOrdemCresceste);
