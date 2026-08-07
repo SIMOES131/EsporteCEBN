@@ -1,6 +1,6 @@
 // Sistema de Gestão - Centro Educacional de Barra Nova
 // DATA FUTURA FIXA: 07 de setembro de 2026
-const DATA_REFERENCIA = new Date(2026, 8, 7); // Mês 8 = Setembro
+const DATA_REFERENCIA = new Date(2026, 11, 31); // Mês 12 = Dezembro
 
 let alunos = [];
 let currentUser = null;
@@ -883,6 +883,26 @@ function inicializarEventos() {
         sidebar.classList.remove("open");
     }
   });
+
+  // Evento do botão da Tabela Completa - usando os filtros atuais
+  document
+    .getElementById("gerarTabelaCompletaBtn")
+    ?.addEventListener("click", function () {
+      // Reaplica os filtros para garantir que alunosFiltrados esteja atualizado
+      aplicarFiltros();
+      // Depois gera a tabela com os alunos filtrados
+      gerarTabelaCompletaComFiltros();
+    });
+
+  // Eventos da Tabela Completa
+  document
+    .getElementById("gerarPDFTabelaCompletaBtn")
+    ?.addEventListener("click", gerarPDFTabelaCompleta);
+  document
+    .getElementById("fecharTabelaCompletaBtn")
+    ?.addEventListener("click", () => {
+      mudarView("alunos");
+    });
 }
 
 let alunosFiltrados = [];
@@ -1056,19 +1076,244 @@ function mudarView(view) {
   document
     .querySelectorAll(".nav-link")
     .forEach((l) => l.classList.remove("active"));
-  document.querySelector(`[data-view="${view}"]`).classList.add("active");
+  const linkAtivo = document.querySelector(`[data-view="${view}"]`);
+  if (linkAtivo) linkAtivo.classList.add("active");
   document
     .querySelectorAll(".view")
     .forEach((v) => v.classList.remove("active"));
-  document.getElementById(`${view}View`).classList.add("active");
+  const viewElement = document.getElementById(`${view}View`);
+  if (viewElement) {
+    viewElement.classList.add("active");
+    viewElement.style.display = "";
+  }
   const titles = {
     dashboard: "Dashboard",
     alunos: "Alunos",
     busca: "Busca Avançada",
     modalidades: "Alunos por Modalidade",
+    tabelaCompleta: "📋 Tabela Completa de Alunos",
   };
-  document.getElementById("pageTitle").textContent = titles[view];
+  document.getElementById("pageTitle").textContent = titles[view] || view;
   if (view === "dashboard") atualizarDashboard();
+}
+
+// ===== FUNÇÃO PARA GERAR TABELA COMPLETA COM FILTROS =====
+function gerarTabelaCompletaComFiltros() {
+  // Usar os alunos já filtrados (alunosFiltrados)
+  let filtrados =
+    alunosFiltrados && alunosFiltrados.length > 0 ? alunosFiltrados : alunos;
+
+  // Mudar para a view da tabela
+  mudarView("tabelaCompleta");
+
+  // Atualizar info dos filtros
+  const filtroInfo = document.getElementById("tabelaFiltroInfo");
+
+  // Coletar informações dos filtros atuais
+  const turma = document.getElementById("filtroTurma")?.value;
+  const modalidade = document.getElementById("filtroModalidade")?.value;
+  const turnoAula = document.getElementById("filtroTurnoAula")?.value;
+  const turnoTreino = document.getElementById("filtroTurnoTreino")?.value;
+  const sexo = document.getElementById("filtroSexo")?.value;
+  const status = document.getElementById("filtroStatus")?.value;
+  const nome = document.getElementById("searchNome")?.value;
+  const idadeMin = document.getElementById("filtroIdadeMin")?.value;
+  const idadeMax = document.getElementById("filtroIdadeMax")?.value;
+  const dia = document.getElementById("filtroDia")?.value;
+  const horario = document.getElementById("filtroHorario")?.value;
+
+  let infoText = "";
+  if (turma) infoText += ` | Turma: ${turma}`;
+  if (modalidade) infoText += ` | Modalidade: ${modalidade}`;
+  if (turnoAula) infoText += ` | Turno Aula: ${turnoAula}`;
+  if (turnoTreino) infoText += ` | Turno Treino: ${turnoTreino}`;
+  if (sexo) infoText += ` | Sexo: ${sexo}`;
+  if (status === "apto") infoText += " | ✅ Apto";
+  else if (status === "suspenso") infoText += " | ❌ Suspenso";
+  else if (status === "incompativel") infoText += " | ⚠️ Incompatível";
+  if (nome) infoText += ` | Nome contém: "${nome}"`;
+  if (idadeMin) infoText += ` | Idade ≥ ${idadeMin}`;
+  if (idadeMax) infoText += ` | Idade ≤ ${idadeMax}`;
+  if (dia) infoText += ` | Dia: ${dia}`;
+  if (horario) infoText += ` | Horário: ${horario}`;
+
+  if (infoText) {
+    filtroInfo.textContent = `Filtros aplicados: ${infoText}`;
+    filtroInfo.style.display = "inline-block";
+  } else {
+    filtroInfo.textContent = "Todos os alunos";
+    filtroInfo.style.display = "inline-block";
+  }
+
+  // Salvar para uso no PDF
+  alunosFiltradosTabela = filtrados;
+
+  // Renderizar a tabela
+  renderizarTabelaCompleta(filtrados);
+}
+
+// ===== FUNÇÃO PARA RENDERIZAR A TABELA COMPLETA =====
+function renderizarTabelaCompleta(alunosArray) {
+  const container = document.getElementById("tabelaCompletaContainer");
+  if (!container) return;
+
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray || alunos);
+  const dataAtual = gerarDataAtualFormatada();
+
+  let html = `
+    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 15px;">
+        <h3 style="color: #2c3e50;">🏫 CENTRO EDUCACIONAL DE BARRA NOVA</h3>
+        <p style="color: #666; font-size: 14px;">LISTA COMPLETA DE ALUNOS</p>
+        <p style="color: #999; font-size: 12px;">Gerado em: ${dataAtual} | Total de alunos: ${alunosOrdenados.length}</p>
+      </div>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: #2c3e50; color: white;">
+              <th style="padding: 10px 12px; text-align: left; border: 1px solid #34495e;">NOME</th>
+              <th style="padding: 10px 12px; text-align: left; border: 1px solid #34495e;">DATA NASC.</th>
+              <th style="padding: 10px 12px; text-align: center; border: 1px solid #34495e;">IDADE</th>
+              <th style="padding: 10px 12px; text-align: center; border: 1px solid #34495e;">CPF</th>
+              <th style="padding: 10px 12px; text-align: left; border: 1px solid #34495e;">MODALIDADES</th>
+            </tr>
+          </thead>
+          <tbody>
+  `;
+
+  alunosOrdenados.forEach((aluno, index) => {
+    const dataNasc = aluno.dataNascimento
+      ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")
+      : "N/I";
+    const cpfFormatado = aluno.cpf
+      ? aluno.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+      : "N/I";
+    const modalidadesLista =
+      aluno.modalidades && aluno.modalidades.length > 0
+        ? aluno.modalidades
+            .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
+            .join(", ")
+        : "Nenhuma";
+    const rowColor = index % 2 === 0 ? "#f9f9f9" : "white";
+
+    html += `
+      <tr style="background: ${rowColor};">
+        <td style="padding: 8px 12px; border: 1px solid #ddd; font-weight: 500;">${aluno.nome}</td>
+        <td style="padding: 8px 12px; border: 1px solid #ddd;">${dataNasc}</td>
+        <td style="padding: 8px 12px; border: 1px solid #ddd; text-align: center;">${aluno.idade}</td>
+        <td style="padding: 8px 12px; border: 1px solid #ddd; text-align: center; font-family: monospace;">${cpfFormatado}</td>
+        <td style="padding: 8px 12px; border: 1px solid #ddd; font-size: 12px;">${modalidadesLista}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center; color: #999; font-size: 11px;">
+        <p>Centro Educacional de Barra Nova - Sistema de Gestão Esportiva</p>
+        <p>Documento gerado automaticamente em ${dataAtual}</p>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// Variável para armazenar os alunos filtrados da tabela
+let alunosFiltradosTabela = [];
+
+// ===== FUNÇÃO PARA GERAR PDF DA TABELA COMPLETA =====
+function gerarPDFTabelaCompleta() {
+  const alunosParaPDF =
+    alunosFiltradosTabela.length > 0 ? alunosFiltradosTabela : alunos;
+  const alunosOrdenados = ordenarAlunosPorNome(alunosParaPDF);
+  const dataAtual = gerarDataAtualFormatada();
+
+  let tabelaHTML = `<!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Tabela Completa de Alunos - Centro Educacional de Barra Nova</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; background: white; }
+      .header { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #2c3e50; padding-bottom: 15px; }
+      .header h1 { color: #2c3e50; font-size: 22px; }
+      .header p { color: #666; font-size: 14px; margin-top: 5px; }
+      .header .total { color: #999; font-size: 12px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+      th { background: #2c3e50; color: white; padding: 10px 12px; text-align: left; border: 1px solid #34495e; }
+      td { padding: 8px 12px; border: 1px solid #ddd; }
+      tr:nth-child(even) { background: #f9f9f9; }
+      .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; color: #999; font-size: 11px; }
+      .col-modalidades { font-size: 12px; }
+      .col-cpf { text-align: center; font-family: monospace; }
+      .col-idade { text-align: center; }
+      @media print { body { padding: 20px; } th { background: #2c3e50 !important; color: white !important; } }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🏫 CENTRO EDUCACIONAL DE BARRA NOVA</h1>
+      <p>LISTA COMPLETA DE ALUNOS</p>
+      <p class="total">Gerado em: ${dataAtual} | Total de alunos: ${alunosOrdenados.length}</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">NOME</th>
+          <th style="width: 15%;">DATA NASC.</th>
+          <th style="width: 8%; text-align: center;">IDADE</th>
+          <th style="width: 15%; text-align: center;">CPF</th>
+          <th style="width: 37%;">MODALIDADES</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  alunosOrdenados.forEach((aluno) => {
+    const dataNasc = aluno.dataNascimento
+      ? new Date(aluno.dataNascimento).toLocaleDateString("pt-BR")
+      : "N/I";
+    const cpfFormatado = aluno.cpf
+      ? aluno.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+      : "N/I";
+    const modalidadesLista =
+      aluno.modalidades && aluno.modalidades.length > 0
+        ? aluno.modalidades
+            .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
+            .join(", ")
+        : "Nenhuma";
+
+    tabelaHTML += `
+      <tr>
+        <td><strong>${aluno.nome}</strong></td>
+        <td>${dataNasc}</td>
+        <td class="col-idade">${aluno.idade}</td>
+        <td class="col-cpf">${cpfFormatado}</td>
+        <td class="col-modalidades">${modalidadesLista}</td>
+      </tr>
+    `;
+  });
+
+  tabelaHTML += `
+      </tbody>
+    </table>
+    <div class="footer">
+      <p>Centro Educacional de Barra Nova - Sistema de Gestão Esportiva</p>
+      <p>Documento gerado automaticamente em ${dataAtual}</p>
+    </div>
+  </body>
+  </html>`;
+
+  const blob = new Blob([tabelaHTML], { type: "text/html" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `tabela_completa_alunos_${dataAtual.replace(/\//g, "-")}.html`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function atualizarDashboard() {
@@ -1937,7 +2182,7 @@ function gerarPDFPorModalidade() {
   );
   const alunosOrdenados = ordenarAlunosPorNome(alunosModalidade);
   const dataAtual = gerarDataAtualFormatada();
-  let tabelaHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title><style>body{font-family:Arial,sans-serif;margin:20px;}h1{text-align:center;color:#2c3e50;font-size:20px;margin-bottom:5px;}.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#2c3e50;color:white;padding:10px;text-align:left;border:1px solid #ddd;font-size:11px;}td{padding:8px;border:1px solid #ddd;font-size:10px;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;text-align:center;font-size:9px;color:#999;}.status-apto{color:#27ae60;font-weight:bold;}.status-suspenso{color:#e74c3c;font-weight:bold;}.inconsistencia{color:#f44336;font-weight:bold;}</style></head><body><h1>Centro Educacional de Barra Nova</h1><div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div><tr><thead><tr><th>ID</th><th>NOME</th><th>STATUS</th><th>PERÍODO SUSPENSÃO</th><th>IDADE</th><th>SEXO</th><th>TURMA</th><th>DIAS/HORÁRIOS</th><th>MODALIDADES</th><th>INCONSISTÊNCIA</th></tr></thead><tbody>`;
+  let tabelaHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Alunos de ${modalidade} - Centro Educacional de Barra Nova</title><style>body{font-family:Arial,sans-serif;margin:20px;}h1{text-align:center;color:#2c3e50;font-size:20px;margin-bottom:5px;}.subtitle{text-align:center;color:#666;font-size:12px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#2c3e50;color:white;padding:10px;text-align:left;border:1px solid #ddd;font-size:11px;}td{padding:8px;border:1px solid #ddd;font-size:10px;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;text-align:center;font-size:9px;color:#999;}.status-apto{color:#27ae60;font-weight:bold;}.status-suspenso{color:#e74c3c;font-weight:bold;}.inconsistencia{color:#f44336;font-weight:bold;}</style></head><body><h1>Centro Educacional de Barra Nova</h1><div class="subtitle">Alunos inscritos em ${modalidade.toUpperCase()} - Gerado em ${dataAtual}</div><table><thead><tr><th>ID</th><th>NOME</th><th>STATUS</th><th>PERÍODO SUSPENSÃO</th><th>IDADE</th><th>SEXO</th><th>TURMA</th><th>DIAS/HORÁRIOS</th><th>OUTRAS MODALIDADES</th><th>INCONSISTÊNCIA</th></tr></thead><tbody>`;
   alunosOrdenados.forEach((aluno) => {
     const outras =
       aluno.modalidades.filter((m) => m !== modalidade).join(", ") || "Nenhuma";
@@ -1957,7 +2202,7 @@ function gerarPDFPorModalidade() {
     const inconsistenciaClass = temInconsistencia ? "inconsistencia" : "";
     tabelaHTML += `<tr><td>${aluno.id}</td><td><strong>${aluno.nome}</strong></td><td class="${statusClass}">${statusText}</td><td>${periodoSuspensao}</td><td>${aluno.idade}</td><td>${aluno.sexo}</td><td>${aluno.turma}</td><td>${diasTreinoTexto}</td><td>${outras}</td><td class="${inconsistenciaClass}">${inconsistenciaText}</td></tr>`;
   });
-  tabelaHTML += `</tbody>追赶<div class="footer">Total de alunos: ${alunosOrdenados.length}</div></body></html>`;
+  tabelaHTML += `</tbody></table><div class="footer">Total de alunos: ${alunosOrdenados.length}</div></body></html>`;
   const blob = new Blob([tabelaHTML], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -1967,6 +2212,6 @@ function gerarPDFPorModalidade() {
 }
 
 console.log(
-  "Sistema inicializado com sucesso! Data de referência: 07/09/2026. Total de alunos: " +
+  "Sistema inicializado com sucesso! Data de referência: 01/01/2026. Total de alunos: " +
     (alunos ? alunos.length : 0),
 );
