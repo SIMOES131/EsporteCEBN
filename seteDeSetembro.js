@@ -842,6 +842,14 @@ function inicializarEventos() {
       renderizarAlunosModalidade([]);
       document.getElementById("modalidadeResultados").innerHTML =
         '<div class="no-results"><i class="fas fa-search"></i><p>Selecione uma modalidade para ver os alunos</p></div>';
+      // Esconder tabela completa se estiver visível
+      const containerModalidades = document.getElementById(
+        "tabelaCompletaContainerModalidades",
+      );
+      if (containerModalidades) {
+        containerModalidades.style.display = "none";
+        containerModalidades.innerHTML = "";
+      }
     });
   document
     .getElementById("searchNome")
@@ -884,24 +892,23 @@ function inicializarEventos() {
     }
   });
 
-  // Evento do botão da Tabela Completa - usando os filtros atuais
+  // Evento do botão da Tabela Completa na view Alunos
   document
     .getElementById("gerarTabelaCompletaBtn")
     ?.addEventListener("click", function () {
-      // Reaplica os filtros para garantir que alunosFiltrados esteja atualizado
       aplicarFiltros();
-      // Depois gera a tabela com os alunos filtrados
-      gerarTabelaCompletaComFiltros();
+      gerarTabelaCompletaNaView("alunos");
     });
 
-  // Eventos da Tabela Completa
+  // Evento do botão da Tabela Completa na view Modalidades
   document
-    .getElementById("gerarPDFTabelaCompletaBtn")
-    ?.addEventListener("click", gerarPDFTabelaCompleta);
-  document
-    .getElementById("fecharTabelaCompletaBtn")
-    ?.addEventListener("click", () => {
-      mudarView("alunos");
+    .getElementById("gerarTabelaCompletaModalidadeBtn")
+    ?.addEventListener("click", function () {
+      if (!currentModalidadeSelecionada) {
+        alert("Selecione uma modalidade primeiro!");
+        return;
+      }
+      gerarTabelaCompletaNaView("modalidades");
     });
 }
 
@@ -964,7 +971,36 @@ function preencherModalidades() {
   };
   const container = document.getElementById("modalidadesButtons");
   if (container) {
-    container.innerHTML = `<div class="modalidades-container"><div class="modalidades-categoria categoria-individual"><h4><i class="fas fa-chess"></i> Esportes Individuais</h4><div class="modalidades-buttons">${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-futsal"><h4><i class="fas fa-futbol"></i> Futsal</h4><div class="modalidades-buttons">${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-handebol"><h4><i class="fas fa-hand-peace"></i> Handebol</h4><div class="modalidades-buttons">${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-volei"><h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4><div class="modalidades-buttons">${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-basquete"><h4><i class="fas fa-basketball-ball"></i> Basquete</h4><div class="modalidades-buttons">${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-baleado"><h4><i class="fas fa-crosshairs"></i> Baleado</h4><div class="modalidades-buttons">${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}</div></div><div class="modalidades-categoria categoria-atletismo"><h4><i class="fas fa-running"></i> Atletismo</h4><div class="modalidades-buttons">${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}</div></div></div>`;
+    container.innerHTML = `<div class="modalidades-container-inner">
+      <div class="modalidades-categoria categoria-individual">
+        <h4><i class="fas fa-chess"></i> Esportes Individuais</h4>
+        <div class="modalidades-buttons">${categorias.individual.map((m) => `<button class="btn-modalidade btn-modalidade-individual" data-modalidade="${m}">${m.charAt(0).toUpperCase() + m.slice(1)}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-futsal">
+        <h4><i class="fas fa-futbol"></i> Futsal</h4>
+        <div class="modalidades-buttons">${categorias.futsal.map((m) => `<button class="btn-modalidade btn-modalidade-futsal" data-modalidade="${m}">${m.replace("futsal ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-handebol">
+        <h4><i class="fas fa-hand-peace"></i> Handebol</h4>
+        <div class="modalidades-buttons">${categorias.handebol.map((m) => `<button class="btn-modalidade btn-modalidade-handebol" data-modalidade="${m}">${m.replace("handebol ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-volei">
+        <h4><i class="fas fa-volleyball-ball"></i> Vôlei</h4>
+        <div class="modalidades-buttons">${categorias.volei.map((m) => `<button class="btn-modalidade btn-modalidade-volei" data-modalidade="${m}">${m.replace("vôlei ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-basquete">
+        <h4><i class="fas fa-basketball-ball"></i> Basquete</h4>
+        <div class="modalidades-buttons">${categorias.basquete.map((m) => `<button class="btn-modalidade btn-modalidade-basquete" data-modalidade="${m}">${m.replace("basquete ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-baleado">
+        <h4><i class="fas fa-crosshairs"></i> Baleado</h4>
+        <div class="modalidades-buttons">${categorias.baleado.map((m) => `<button class="btn-modalidade btn-modalidade-baleado" data-modalidade="${m}">${m.replace("baleado ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+      <div class="modalidades-categoria categoria-atletismo">
+        <h4><i class="fas fa-running"></i> Atletismo</h4>
+        <div class="modalidades-buttons">${categorias.atletismo.map((m) => `<button class="btn-modalidade btn-modalidade-atletismo" data-modalidade="${m}">${m.replace("atletismo ", "").toUpperCase()}</button>`).join("")}</div>
+      </div>
+    </div>`;
     document.querySelectorAll(".btn-modalidade").forEach((btn) => {
       btn.addEventListener("click", () => {
         const modalidade = btn.dataset.modalidade;
@@ -975,6 +1011,14 @@ function preencherModalidades() {
             .forEach((b) => b.classList.remove("btn-modalidade-active"));
         btn.classList.add("btn-modalidade-active");
         filtrarPorModalidade(modalidade);
+        // Esconder tabela completa ao selecionar nova modalidade
+        const containerModalidades = document.getElementById(
+          "tabelaCompletaContainerModalidades",
+        );
+        if (containerModalidades) {
+          containerModalidades.style.display = "none";
+          containerModalidades.innerHTML = "";
+        }
       });
     });
   }
@@ -1091,81 +1135,114 @@ function mudarView(view) {
     alunos: "Alunos",
     busca: "Busca Avançada",
     modalidades: "Alunos por Modalidade",
-    tabelaCompleta: "📋 Tabela Completa de Alunos",
   };
   document.getElementById("pageTitle").textContent = titles[view] || view;
   if (view === "dashboard") atualizarDashboard();
 }
 
-// ===== FUNÇÃO PARA GERAR TABELA COMPLETA COM FILTROS =====
-function gerarTabelaCompletaComFiltros() {
-  // Usar os alunos já filtrados (alunosFiltrados)
-  let filtrados =
-    alunosFiltrados && alunosFiltrados.length > 0 ? alunosFiltrados : alunos;
+// ===== FUNÇÃO PARA GERAR TABELA COMPLETA NA PRÓPRIA VIEW =====
+function gerarTabelaCompletaNaView(view) {
+  let alunosParaTabela = [];
+  let tituloFiltro = "";
 
-  // Mudar para a view da tabela
-  mudarView("tabelaCompleta");
+  if (view === "alunos") {
+    alunosParaTabela =
+      alunosFiltrados && alunosFiltrados.length > 0 ? alunosFiltrados : alunos;
 
-  // Atualizar info dos filtros
-  const filtroInfo = document.getElementById("tabelaFiltroInfo");
+    // Coletar informações dos filtros
+    const turma = document.getElementById("filtroTurma")?.value;
+    const modalidade = document.getElementById("filtroModalidade")?.value;
+    const turnoAula = document.getElementById("filtroTurnoAula")?.value;
+    const turnoTreino = document.getElementById("filtroTurnoTreino")?.value;
+    const sexo = document.getElementById("filtroSexo")?.value;
+    const status = document.getElementById("filtroStatus")?.value;
+    const nome = document.getElementById("searchNome")?.value;
+    const idadeMin = document.getElementById("filtroIdadeMin")?.value;
+    const idadeMax = document.getElementById("filtroIdadeMax")?.value;
 
-  // Coletar informações dos filtros atuais
-  const turma = document.getElementById("filtroTurma")?.value;
-  const modalidade = document.getElementById("filtroModalidade")?.value;
-  const turnoAula = document.getElementById("filtroTurnoAula")?.value;
-  const turnoTreino = document.getElementById("filtroTurnoTreino")?.value;
-  const sexo = document.getElementById("filtroSexo")?.value;
-  const status = document.getElementById("filtroStatus")?.value;
-  const nome = document.getElementById("searchNome")?.value;
-  const idadeMin = document.getElementById("filtroIdadeMin")?.value;
-  const idadeMax = document.getElementById("filtroIdadeMax")?.value;
-  const dia = document.getElementById("filtroDia")?.value;
-  const horario = document.getElementById("filtroHorario")?.value;
+    if (turma) tituloFiltro += ` | Turma: ${turma}`;
+    if (modalidade) tituloFiltro += ` | Modalidade: ${modalidade}`;
+    if (turnoAula) tituloFiltro += ` | Turno Aula: ${turnoAula}`;
+    if (turnoTreino) tituloFiltro += ` | Turno Treino: ${turnoTreino}`;
+    if (sexo) tituloFiltro += ` | Sexo: ${sexo}`;
+    if (status === "apto") tituloFiltro += " | ✅ Apto";
+    else if (status === "suspenso") tituloFiltro += " | ❌ Suspenso";
+    else if (status === "incompativel") tituloFiltro += " | ⚠️ Incompatível";
+    if (nome) tituloFiltro += ` | Nome contém: "${nome}"`;
+    if (idadeMin) tituloFiltro += ` | Idade ≥ ${idadeMin}`;
+    if (idadeMax) tituloFiltro += ` | Idade ≤ ${idadeMax}`;
 
-  let infoText = "";
-  if (turma) infoText += ` | Turma: ${turma}`;
-  if (modalidade) infoText += ` | Modalidade: ${modalidade}`;
-  if (turnoAula) infoText += ` | Turno Aula: ${turnoAula}`;
-  if (turnoTreino) infoText += ` | Turno Treino: ${turnoTreino}`;
-  if (sexo) infoText += ` | Sexo: ${sexo}`;
-  if (status === "apto") infoText += " | ✅ Apto";
-  else if (status === "suspenso") infoText += " | ❌ Suspenso";
-  else if (status === "incompativel") infoText += " | ⚠️ Incompatível";
-  if (nome) infoText += ` | Nome contém: "${nome}"`;
-  if (idadeMin) infoText += ` | Idade ≥ ${idadeMin}`;
-  if (idadeMax) infoText += ` | Idade ≤ ${idadeMax}`;
-  if (dia) infoText += ` | Dia: ${dia}`;
-  if (horario) infoText += ` | Horário: ${horario}`;
+    if (tituloFiltro) {
+      tituloFiltro = "Filtros aplicados:" + tituloFiltro;
+    } else {
+      tituloFiltro = "Todos os alunos";
+    }
 
-  if (infoText) {
-    filtroInfo.textContent = `Filtros aplicados: ${infoText}`;
-    filtroInfo.style.display = "inline-block";
-  } else {
-    filtroInfo.textContent = "Todos os alunos";
-    filtroInfo.style.display = "inline-block";
+    // Renderizar no container de alunos
+    const container = document.getElementById("tabelaCompletaContainerAlunos");
+    if (container) {
+      container.style.display = "block";
+      container.innerHTML = renderizarTabelaCompletaHTML(
+        alunosParaTabela,
+        tituloFiltro,
+      );
+      // Rolar para a tabela
+      container.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  } else if (view === "modalidades") {
+    alunosParaTabela = alunos.filter((a) =>
+      a.modalidades.includes(currentModalidadeSelecionada),
+    );
+    tituloFiltro = `Modalidade: ${currentModalidadeSelecionada}`;
+
+    if (alunosParaTabela.length === 0) {
+      alert("Nenhum aluno encontrado para esta modalidade!");
+      return;
+    }
+
+    // Renderizar no container de modalidades
+    const container = document.getElementById(
+      "tabelaCompletaContainerModalidades",
+    );
+    if (container) {
+      container.style.display = "block";
+      container.innerHTML = renderizarTabelaCompletaHTML(
+        alunosParaTabela,
+        tituloFiltro,
+      );
+      // Rolar para a tabela
+      container.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   // Salvar para uso no PDF
-  alunosFiltradosTabela = filtrados;
-
-  // Renderizar a tabela
-  renderizarTabelaCompleta(filtrados);
+  alunosFiltradosTabela = alunosParaTabela;
 }
 
-// ===== FUNÇÃO PARA RENDERIZAR A TABELA COMPLETA =====
-function renderizarTabelaCompleta(alunosArray) {
-  const container = document.getElementById("tabelaCompletaContainer");
-  if (!container) return;
-
-  const alunosOrdenados = ordenarAlunosPorNome(alunosArray || alunos);
+// ===== FUNÇÃO PARA RENDERIZAR O HTML DA TABELA COMPLETA =====
+function renderizarTabelaCompletaHTML(alunosArray, tituloFiltro) {
+  const alunosOrdenados = ordenarAlunosPorNome(alunosArray);
   const dataAtual = gerarDataAtualFormatada();
 
   let html = `
-    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #2c3e50; padding-bottom: 15px;">
-        <h3 style="color: #2c3e50;">🏫 CENTRO EDUCACIONAL DE BARRA NOVA</h3>
-        <p style="color: #666; font-size: 14px;">LISTA COMPLETA DE ALUNOS</p>
-        <p style="color: #999; font-size: 12px;">Gerado em: ${dataAtual} | Total de alunos: ${alunosOrdenados.length}</p>
+    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h4 style="color: #2c3e50; margin: 0;"><i class="fas fa-table" style="color: #9b59b6;"></i> Tabela Completa de Alunos</h4>
+          <p style="color: #666; font-size: 12px; margin: 5px 0 0 0;">
+            <strong>Filtro:</strong> ${tituloFiltro} | 
+            <strong>Total:</strong> ${alunosOrdenados.length} alunos | 
+            <strong>Gerado:</strong> ${dataAtual}
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button onclick="gerarPDFTabelaCompleta()" class="btn-pdf" style="padding: 8px 16px; font-size: 12px;">
+            <i class="fas fa-file-pdf"></i> Gerar PDF
+          </button>
+          <button onclick="fecharTabelaCompleta('${document.getElementById("tabelaCompletaContainerAlunos") ? "alunos" : "modalidades"}')" class="btn-secondary" style="padding: 8px 16px; font-size: 12px;">
+            <i class="fas fa-times"></i> Fechar
+          </button>
+        </div>
       </div>
       <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -1218,14 +1295,34 @@ function renderizarTabelaCompleta(alunosArray) {
     </div>
   `;
 
-  container.innerHTML = html;
+  return html;
 }
+
+// ===== FUNÇÃO PARA FECHAR A TABELA COMPLETA =====
+window.fecharTabelaCompleta = function (view) {
+  if (view === "alunos") {
+    const container = document.getElementById("tabelaCompletaContainerAlunos");
+    if (container) {
+      container.style.display = "none";
+      container.innerHTML = "";
+    }
+  } else {
+    const container = document.getElementById(
+      "tabelaCompletaContainerModalidades",
+    );
+    if (container) {
+      container.style.display = "none";
+      container.innerHTML = "";
+    }
+  }
+  alunosFiltradosTabela = [];
+};
 
 // Variável para armazenar os alunos filtrados da tabela
 let alunosFiltradosTabela = [];
 
 // ===== FUNÇÃO PARA GERAR PDF DA TABELA COMPLETA =====
-function gerarPDFTabelaCompleta() {
+window.gerarPDFTabelaCompleta = function () {
   const alunosParaPDF =
     alunosFiltradosTabela.length > 0 ? alunosFiltradosTabela : alunos;
   const alunosOrdenados = ordenarAlunosPorNome(alunosParaPDF);
@@ -1314,7 +1411,7 @@ function gerarPDFTabelaCompleta() {
   link.download = `tabela_completa_alunos_${dataAtual.replace(/\//g, "-")}.html`;
   link.click();
   URL.revokeObjectURL(link.href);
-}
+};
 
 function atualizarDashboard() {
   const masculino = alunos.filter((a) => a.sexo === "Masculino").length;
@@ -1510,6 +1607,14 @@ function limparFiltros() {
   });
   alunosFiltrados = alunos;
   renderizarAlunos(alunos);
+  // Esconder tabela completa se estiver visível
+  const containerAlunos = document.getElementById(
+    "tabelaCompletaContainerAlunos",
+  );
+  if (containerAlunos) {
+    containerAlunos.style.display = "none";
+    containerAlunos.innerHTML = "";
+  }
 }
 
 function buscaAvancada() {

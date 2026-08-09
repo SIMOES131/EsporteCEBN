@@ -565,6 +565,56 @@ body {
   margin-bottom: 20px;
 }
 
+.modalidades-container-inner {
+  width: 100%;
+}
+
+/* BARRA DE AÇÕES FIXA */
+.modalidades-actions-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.modalidades-actions-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalidades-actions-inner .btn-primary,
+.modalidades-actions-inner .btn-pdf,
+.modalidades-actions-inner .btn-secondary {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .modalidades-actions-fixed {
+    padding: 10px 15px;
+    position: relative;
+    top: auto;
+  }
+  .modalidades-actions-inner {
+    gap: 8px;
+  }
+  .modalidades-actions-inner .btn-primary,
+  .modalidades-actions-inner .btn-pdf,
+  .modalidades-actions-inner .btn-secondary {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
 .modalidades-categoria {
   margin-bottom: 30px;
 }

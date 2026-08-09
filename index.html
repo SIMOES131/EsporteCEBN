@@ -365,7 +365,6 @@
               >
                 <i class="fas fa-calendar-alt"></i> Frequência Mensal
               </button>
-              <!-- NOVO BOTÃO: TABELA COMPLETA -->
               <button
                 id="gerarTabelaCompletaBtn"
                 class="btn-primary"
@@ -376,6 +375,11 @@
             </div>
           </div>
           <div id="alunosList" class="alunos-grid"></div>
+          <!-- Container para tabela completa na view Alunos -->
+          <div
+            id="tabelaCompletaContainerAlunos"
+            style="display: none; margin-top: 30px"
+          ></div>
         </div>
 
         <!-- Busca Avançada View -->
@@ -529,84 +533,52 @@
 
         <!-- Modalidades View -->
         <div id="modalidadesView" class="view">
-          <div class="modalidades-buttons" id="modalidadesButtons"></div>
-          <div
-            class="filtros-actions"
-            style="
-              margin-bottom: 20px;
-              justify-content: space-between;
-              flex-wrap: wrap;
-              gap: 10px;
-            "
-          >
-            <button id="limparFiltroModalidadeBtn" class="btn-secondary">
-              <i class="fas fa-eraser"></i> Limpar Filtro
-            </button>
-            <button id="gerarPDFModalidadeBtn" class="btn-pdf">
-              <i class="fas fa-file-pdf"></i> Gerar PDF desta Modalidade
-            </button>
-            <button
-              id="gerarFrequenciaModalidadeBtn"
-              class="btn-primary"
-              style="background: #3498db"
-            >
-              <i class="fas fa-check-square"></i> Frequência (Dia)
-            </button>
-            <button
-              id="gerarFrequenciaMensalModalidadeBtn"
-              class="btn-primary"
-              style="background: #2ecc71"
-            >
-              <i class="fas fa-calendar-alt"></i> Frequência Mensal
-            </button>
+          <div class="modalidades-container">
+            <div class="modalidades-buttons" id="modalidadesButtons"></div>
           </div>
-          <div id="modalidadeResultados" class="alunos-grid"></div>
-        </div>
 
-        <!-- VIEW PARA EXIBIR A TABELA COMPLETA -->
-        <div id="tabelaCompletaView" class="view" style="display: none">
-          <div class="filtros-panel">
-            <h3><i class="fas fa-table"></i> Tabela Completa de Alunos</h3>
-            <p style="color: #666; font-size: 14px; margin-bottom: 15px">
-              Lista com <strong>Nome</strong>,
-              <strong>Data de Nascimento</strong>, <strong>Idade</strong>,
-              <strong>CPF</strong> e <strong>Modalidades</strong>
-              <span
-                id="tabelaFiltroInfo"
-                style="
-                  display: inline-block;
-                  background: #e8f4fd;
-                  padding: 2px 12px;
-                  border-radius: 12px;
-                  font-size: 12px;
-                  margin-left: 10px;
-                "
-              ></span>
-            </p>
-            <div
-              class="filtros-actions"
-              style="display: flex; gap: 10px; flex-wrap: wrap"
-            >
-              <button id="gerarPDFTabelaCompletaBtn" class="btn-pdf">
-                <i class="fas fa-file-pdf"></i> 📄 Gerar PDF da Tabela
+          <!-- Barra de Ações Fixa -->
+          <div id="modalidadesActions" class="modalidades-actions-fixed">
+            <div class="modalidades-actions-inner">
+              <button id="limparFiltroModalidadeBtn" class="btn-secondary">
+                <i class="fas fa-eraser"></i> Limpar Filtro
               </button>
-              <button id="fecharTabelaCompletaBtn" class="btn-secondary">
-                <i class="fas fa-arrow-left"></i> Voltar
+              <button id="gerarPDFModalidadeBtn" class="btn-pdf">
+                <i class="fas fa-file-pdf"></i> Gerar PDF
+              </button>
+              <button
+                id="gerarFrequenciaModalidadeBtn"
+                class="btn-primary"
+                style="background: #3498db"
+              >
+                <i class="fas fa-check-square"></i> Frequência (Dia)
+              </button>
+              <button
+                id="gerarFrequenciaMensalModalidadeBtn"
+                class="btn-primary"
+                style="background: #2ecc71"
+              >
+                <i class="fas fa-calendar-alt"></i> Frequência Mensal
+              </button>
+              <button
+                id="gerarTabelaCompletaModalidadeBtn"
+                class="btn-primary"
+                style="background: #9b59b6"
+              >
+                <i class="fas fa-table"></i> 📋 Dados Cadastrais
               </button>
             </div>
           </div>
+
+          <div id="modalidadeResultados" class="alunos-grid"></div>
+          <!-- Container para tabela completa na view Modalidades -->
           <div
-            id="tabelaCompletaContainer"
-            style="
-              overflow-x: auto;
-              margin-top: 20px;
-              background: white;
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            "
+            id="tabelaCompletaContainerModalidades"
+            style="display: none; margin-top: 30px"
           ></div>
         </div>
+
+        <!-- VIEW PARA EXIBIR A TABELA COMPLETA (removida - agora aparece na própria página) -->
       </div>
     </div>
 
